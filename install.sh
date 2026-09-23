@@ -40,6 +40,10 @@ TERMINAL=(
     kitty
 )
 
+DESKTOP_SHELL=(
+    quickshell # bar/widgets, configured in QML
+)
+
 AUDIO=(
     pipewire
     pipewire-alsa
@@ -69,6 +73,7 @@ PKGS=(
     "${PORTALS[@]}"
     "${KEYRING[@]}"
     "${TERMINAL[@]}"
+    "${DESKTOP_SHELL[@]}"
     "${AUDIO[@]}"
     "${SCREENSHOT[@]}"
     "${BASICS[@]}"

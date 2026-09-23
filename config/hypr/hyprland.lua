@@ -55,6 +55,10 @@ local menu        = "hyprlauncher"
 --   hl.exec_cmd("waybar & hyprpaper & firefox")
 -- end)
 
+hl.on("hyprland.start", function ()
+    hl.exec_cmd("qs") -- Quickshell bar, config in ~/.config/quickshell
+end)
+
 
 -------------------------------
 ---- ENVIRONMENT VARIABLES ----
@@ -102,8 +106,8 @@ hl.config({
         border_size = 2,
 
         col = {
-            active_border   = { colors = {"rgba(33ccffee)", "rgba(00ff99ee)"}, angle = 45 },
-            inactive_border = "rgba(595959aa)",
+            active_border   = { colors = {"rgba(ffffffcc)", "rgba(777777cc)"}, angle = 45 },
+            inactive_border = "rgba(333333aa)",
         },
 
         -- Set to true to enable resizing windows by clicking and dragging on borders and gaps
@@ -216,8 +220,8 @@ hl.config({
 
 hl.config({
     misc = {
-        force_default_wallpaper = -1,    -- Set to 0 or 1 to disable the anime mascot wallpapers
-        disable_hyprland_logo   = false, -- If true disables the random hyprland logo / anime girl background. :(
+        force_default_wallpaper = 0,     -- Wallpaper is a video played by Quickshell
+        disable_hyprland_logo   = true,
     },
 })
 
@@ -271,7 +275,7 @@ local closeWindowBind = hl.bind(mainMod .. " + T", hl.dsp.window.close())
 -- closeWindowBind:set_enabled(false)
 hl.bind(mainMod .. " + M", hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'"))
 hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(fileManager))
-hl.bind(mainMod .. " + V", hl.dsp.window.float({ action = "toggle" }))
+hl.bind(mainMod .. " + F", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. " + R", hl.dsp.exec_cmd(menu))
 hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
 hl.bind(mainMod .. " + Y", hl.dsp.layout("togglesplit"))    -- dwindle only
@@ -366,6 +370,15 @@ hl.window_rule({
     },
 
     no_focus = true,
+})
+
+-- Blur behind the Quickshell bar
+hl.layer_rule({
+    name  = "blur-bar",
+    match = { namespace = "^quickshell-bar$" },
+
+    blur         = true,
+    ignore_alpha = 0.2,
 })
 
 -- Layer rules also return a handle.

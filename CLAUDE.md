@@ -9,7 +9,7 @@ Personal dotfiles for a Hyprland desktop on Arch Linux.
 - The live system has changes that aren't in the repo yet — only add them when asked:
   - Dark mode: `~/.config/qt5ct/qt5ct.conf` and `~/.config/qt6ct/qt6ct.conf` (Fusion + darker palette), `~/.config/gtk-3.0` and `gtk-4.0/settings.ini`, gsettings `prefer-dark`
   - Packages not in `install.sh` yet: `gnome-themes-extra`, `qt6ct`, `qt5ct`, `fuzzel`
-- Package groups are bash arrays in `install.sh` (CORE, PORTALS, KEYRING, TERMINAL, AUDIO, SCREENSHOT, BASICS). Add new packages to the matching group.
+- Package groups are bash arrays in `install.sh` (CORE, PORTALS, KEYRING, TERMINAL, DESKTOP_SHELL, AUDIO, SCREENSHOT, BASICS). Add new packages to the matching group.
 - Official repos only (pacman). No AUR helper yet.
 
 ## Conventions
