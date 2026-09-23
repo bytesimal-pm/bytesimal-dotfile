@@ -1,0 +1,135 @@
+/* Monochrome, see-through Firefox UI matching the Hyprland rice
+ * (bar, kitty, Dolphin, Vesktop). Palette = config/quickshell/Theme.qml.
+ * Needs user.js (legacy stylesheets + transparent browser). */
+
+:root {
+    --mono-text: #e6e6e6;
+    --mono-dim: #707070;
+    --mono-white: #ffffff;
+    --mono-border: rgba(255, 255, 255, 0.15);
+    --mono-bg-back: rgba(0, 0, 0, 0.55);    /* tab strip */
+    --mono-bg-mid: rgba(0, 0, 0, 0.45);     /* toolbar, bookmarks */
+    --mono-bg-float: rgba(10, 10, 10, 0.94); /* menus, panels: readable */
+    --mono-field: rgba(255, 255, 255, 0.06);
+    --mono-hover: rgba(255, 255, 255, 0.08);
+    --mono-active: rgba(255, 255, 255, 0.14);
+
+    /* Firefox theme variables */
+    --lwt-accent-color: transparent !important;
+    --lwt-text-color: var(--mono-text) !important;
+    --toolbar-bgcolor: var(--mono-bg-mid) !important;
+    --toolbar-color: var(--mono-text) !important;
+    --toolbox-bgcolor: transparent !important;
+    --toolbox-bgcolor-inactive: transparent !important;
+    --tabs-navbar-separator-color: transparent !important;
+    --tab-selected-bgcolor: var(--mono-white) !important;
+    --tab-selected-textcolor: #000000 !important;
+    --tab-hover-background-color: var(--mono-hover) !important;
+    --toolbarbutton-icon-fill: var(--mono-text) !important;
+    --toolbarbutton-hover-background: var(--mono-hover) !important;
+    --toolbarbutton-active-background: var(--mono-active) !important;
+    --toolbar-field-background-color: var(--mono-field) !important;
+    --toolbar-field-color: var(--mono-text) !important;
+    --toolbar-field-border-color: var(--mono-border) !important;
+    --toolbar-field-focus-background-color: rgba(10, 10, 10, 0.9) !important;
+    --toolbar-field-focus-color: var(--mono-white) !important;
+    --toolbar-field-focus-border-color: var(--mono-white) !important;
+    --urlbar-box-bgcolor: var(--mono-field) !important;
+    --urlbar-box-hover-bgcolor: var(--mono-hover) !important;
+    --urlbarView-highlight-background: var(--mono-white) !important;
+    --urlbarView-highlight-color: #000000 !important;
+    --urlbarView-hover-background: var(--mono-hover) !important;
+    --arrowpanel-background: var(--mono-bg-float) !important;
+    --arrowpanel-color: var(--mono-text) !important;
+    --arrowpanel-border-color: var(--mono-border) !important;
+    --panel-separator-color: var(--mono-border) !important;
+    --button-primary-bgcolor: var(--mono-white) !important;
+    --button-primary-hover-bgcolor: #d0d0d0 !important;
+    --button-primary-active-bgcolor: #b0b0b0 !important;
+    --button-primary-color: #000000 !important;
+    --color-accent-primary: var(--mono-white) !important;
+    --focus-outline-color: var(--mono-white) !important;
+    --identity-btn-hover-background-color: var(--mono-hover) !important;
+    --sidebar-background-color: var(--mono-bg-mid) !important;
+    --sidebar-text-color: var(--mono-text) !important;
+    --tabpanel-background-color: transparent !important;
+    --chrome-content-separator-color: var(--mono-border) !important;
+}
+
+/* Transparent window: the blurred desktop shows through the UI */
+#main-window,
+#browser,
+#tabbrowser-tabbox,
+#tabbrowser-tabpanels,
+.browserContainer,
+.browserStack,
+#navigator-toolbox {
+    background: transparent !important;
+}
+
+#TabsToolbar,
+#titlebar {
+    background: var(--mono-bg-back) !important;
+}
+
+#nav-bar,
+#PersonalToolbar {
+    background: var(--mono-bg-mid) !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* UI font */
+#navigator-toolbox,
+menupopup,
+panel,
+.tabbrowser-tab {
+    font-family: "JetBrainsMono Nerd Font", sans-serif !important;
+}
+
+/* Tabs: selected tab is a white pill with black text, like the active workspace */
+.tab-background {
+    border-radius: 10px !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+.tabbrowser-tab[selected] .tab-background {
+    background: var(--mono-white) !important;
+}
+.tabbrowser-tab[selected] .tab-label,
+.tabbrowser-tab[selected] .tab-close-button {
+    color: #000000 !important;
+    fill: #000000 !important;
+}
+.tabbrowser-tab:not([selected]) .tab-label {
+    color: var(--mono-dim) !important;
+}
+.tabbrowser-tab:not([selected]):hover .tab-label {
+    color: var(--mono-text) !important;
+}
+
+/* URL bar: rounded, thin border */
+#urlbar-background {
+    border-radius: 10px !important;
+    border: 1px solid var(--mono-border) !important;
+    background: var(--mono-field) !important;
+}
+#urlbar[focused] #urlbar-background,
+#urlbar[open] #urlbar-background {
+    border-color: var(--mono-white) !important;
+    background: rgba(10, 10, 10, 0.94) !important;
+}
+
+/* Menus and panels: rounded like the Quickshell popups */
+menupopup,
+panel {
+    --panel-border-radius: 10px !important;
+    --panel-background: var(--mono-bg-float) !important;
+    --panel-color: var(--mono-text) !important;
+    --panel-border-color: var(--mono-border) !important;
+}
+menupopup menuitem[_moz-menuactive],
+menupopup menu[_moz-menuactive] {
+    background: var(--mono-white) !important;
+    color: #000000 !important;
+}

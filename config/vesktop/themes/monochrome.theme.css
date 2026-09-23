@@ -1,0 +1,180 @@
+/**
+ * @name Monochrome
+ * @description See-through black & white, matching the Hyprland rice (bar, kitty, Dolphin). Needs Vencord's "Transparent window" setting.
+ * @author bytesimal
+ * @version 1.0.0
+ */
+
+/* Palette (same as config/quickshell/Theme.qml) */
+:root {
+    --mono-text: #e6e6e6;
+    --mono-dim: #707070;
+    --mono-white: #ffffff;
+    --mono-border: rgba(255, 255, 255, 0.15);
+
+    /* Layers: more see-through at the back, more solid in front */
+    --mono-bg-back: rgba(0, 0, 0, 0.45);   /* server list, app frame */
+    --mono-bg-mid: rgba(0, 0, 0, 0.35);    /* channel list, member list */
+    --mono-bg-chat: rgba(0, 0, 0, 0.25);   /* chat */
+    --mono-bg-float: rgba(10, 10, 10, 0.92); /* popouts, menus, modals: readable */
+    --mono-bg-input: rgba(255, 255, 255, 0.06);
+    --mono-hover: rgba(255, 255, 255, 0.08);
+    --mono-active: rgba(255, 255, 255, 0.14);
+
+    --font-primary: "JetBrainsMono Nerd Font", "Noto Sans", sans-serif;
+    --font-display: "JetBrainsMono Nerd Font", "Noto Sans", sans-serif;
+    --font-headline: "JetBrainsMono Nerd Font", "Noto Sans", sans-serif;
+    --font-code: "JetBrainsMono Nerd Font", monospace;
+}
+
+/* Let the transparent window show the (blurred) desktop through */
+html,
+body,
+#app-mount,
+[class*="appMount"],
+[class*="app_"],
+[class*="bg_"] {
+    background: transparent !important;
+}
+
+.theme-dark,
+.theme-darker,
+.theme-midnight,
+.visual-refresh.theme-dark,
+.visual-refresh.theme-darker,
+.visual-refresh.theme-midnight {
+    /* Backgrounds (old and visual-refresh variable names) */
+    --background-primary: var(--mono-bg-chat);
+    --background-secondary: var(--mono-bg-mid);
+    --background-secondary-alt: var(--mono-bg-mid);
+    --background-tertiary: var(--mono-bg-back);
+    --background-floating: var(--mono-bg-float);
+    --background-nested-floating: var(--mono-bg-float);
+    --background-accent: var(--mono-active);
+    --background-base-lowest: var(--mono-bg-back);
+    --background-base-lower: var(--mono-bg-mid);
+    --background-base-low: var(--mono-bg-chat);
+    --background-surface-high: var(--mono-bg-float);
+    --background-surface-higher: var(--mono-bg-float);
+    --background-surface-highest: var(--mono-bg-float);
+    --bg-base-primary: var(--mono-bg-chat);
+    --bg-base-secondary: var(--mono-bg-mid);
+    --bg-base-tertiary: var(--mono-bg-back);
+    --bg-surface-overlay: var(--mono-bg-float);
+    --bg-surface-raised: var(--mono-bg-float);
+    --bg-overlay-chat: transparent;
+    --bg-overlay-1: transparent;
+    --bg-overlay-2: transparent;
+    --bg-overlay-3: transparent;
+    --bg-overlay-4: transparent;
+    --bg-overlay-5: transparent;
+    --bg-overlay-6: transparent;
+    --app-frame-background: var(--mono-bg-back);
+    --chat-background-default: transparent;
+    --modal-background: var(--mono-bg-float);
+    --modal-footer-background: var(--mono-bg-float);
+    --input-background: var(--mono-bg-input);
+    --channeltextarea-background: var(--mono-bg-input);
+    --home-background: transparent;
+    --card-primary-bg: var(--mono-bg-input);
+    --background-mod-subtle: var(--mono-hover);
+    --background-mod-normal: var(--mono-hover);
+    --background-mod-strong: var(--mono-active);
+    --background-modifier-hover: var(--mono-hover);
+    --background-modifier-active: var(--mono-active);
+    --background-modifier-selected: var(--mono-active);
+    --background-modifier-accent: var(--mono-border);
+
+    /* Borders */
+    --border-subtle: var(--mono-border);
+    --border-normal: var(--mono-border);
+    --border-strong: rgba(255, 255, 255, 0.3);
+    --app-border-frame: var(--mono-border);
+
+    /* Text */
+    --text-normal: var(--mono-text);
+    --text-default: var(--mono-text);
+    --text-strong: var(--mono-white);
+    --text-muted: var(--mono-dim);
+    --text-subtle: var(--mono-dim);
+    --text-link: var(--mono-white);
+    --header-primary: var(--mono-white);
+    --header-secondary: var(--mono-dim);
+    --channels-default: var(--mono-dim);
+    --channel-icon: var(--mono-dim);
+    --interactive-normal: var(--mono-dim);
+    --interactive-hover: var(--mono-text);
+    --interactive-active: var(--mono-white);
+    --interactive-muted: #3a3a3a;
+    --icon-default: var(--mono-text);
+    --icon-muted: var(--mono-dim);
+
+    /* Accent: white instead of Discord blurple */
+    --brand-experiment: var(--mono-white);
+    --brand-260: var(--mono-white);
+    --brand-300: var(--mono-white);
+    --brand-330: var(--mono-white);
+    --brand-345: var(--mono-white);
+    --brand-360: var(--mono-white);
+    --brand-400: var(--mono-white);
+    --brand-430: var(--mono-white);
+    --brand-460: var(--mono-white);
+    --brand-500: var(--mono-white);
+    --brand-530: #e0e0e0;
+    --brand-560: #d0d0d0;
+    --brand-600: #b0b0b0;
+    --brand-630: #a0a0a0;
+    --brand-660: #909090;
+    --background-brand: var(--mono-active); /* selected Discord-logo tile: keep the white logo visible */
+    --text-brand: var(--mono-white);
+    --control-brand-foreground: var(--mono-white);
+    --control-brand-foreground-new: var(--mono-white);
+    --control-primary-background-default: var(--mono-white);
+    --control-primary-background-hover: #d0d0d0;
+    --control-primary-background-active: #b0b0b0;
+    --control-primary-border-default: transparent;
+    --control-primary-text-default: #000000;
+    --control-primary-text-hover: #000000;
+    --control-primary-text-active: #000000;
+    --control-primary-icon-default: #000000;
+    --control-primary-icon-hover: #000000;
+    --control-primary-icon-active: #000000;
+    --button-filled-brand-background: var(--mono-white);
+    --button-filled-brand-background-hover: #d0d0d0;
+    --button-filled-brand-text: #000000;
+    --mention-foreground: var(--mono-white);
+    --mention-background: rgba(255, 255, 255, 0.12);
+    --info-warning-foreground: var(--mono-text);
+
+    /* Scrollbars */
+    --scrollbar-thin-thumb: rgba(255, 255, 255, 0.2);
+    --scrollbar-auto-thumb: rgba(255, 255, 255, 0.2);
+    --scrollbar-auto-track: transparent;
+}
+
+/* Selected channel / DM: white pill with black text, like the active workspace */
+[class*="modeSelected"] [class*="link"],
+[class*="selected_"][class*="interactive"] {
+    background: var(--mono-white) !important;
+}
+[class*="modeSelected"] [class*="link"] *,
+[class*="selected_"][class*="interactive"] * {
+    color: #000000 !important;
+}
+
+/* Buttons that use brand color directly */
+[class*="colorBrand"]:not([class*="lookLink"]) {
+    background-color: var(--mono-white) !important;
+    color: #000000 !important;
+}
+
+/* Rounded message box, like the launcher/popups */
+[class*="channelTextArea"] [class*="scrollableContainer"] {
+    border-radius: 10px;
+    border: 1px solid var(--mono-border);
+}
+
+::selection {
+    background: var(--mono-white);
+    color: #000000;
+}

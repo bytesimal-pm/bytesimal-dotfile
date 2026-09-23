@@ -25,6 +25,34 @@ bindkey '^[[3~'   delete-char         # Delete
 alias ls='ls --color=auto'
 alias grep='grep --color=auto'
 
+# git-protocol {https|ssh} [remote]: switch a remote's URL between
+# https://host/owner/repo.git and git@host:owner/repo.git.
+# With no protocol, prints the current URL.
+git-protocol() {
+    local remote=${2:-origin} url host repo new
+    url=$(git remote get-url "$remote") || return
+    if [[ $url =~ '^https?://([^/]+)/(.+)$' ]]; then
+        host=$match[1] repo=$match[2]
+    elif [[ $url =~ '^(ssh://)?[^@]+@([^:/]+)[:/](.+)$' ]]; then
+        host=$match[2] repo=$match[3]
+    else
+        print -u2 "git-protocol: can't parse $remote URL: $url"
+        return 1
+    fi
+    repo=${repo%.git}.git
+
+    case $1 in
+        https) new="https://$host/$repo" ;;
+        ssh)   new="git@$host:$repo" ;;
+        "")    print "$remote: $url"; return ;;
+        *)     print -u2 "usage: git-protocol {https|ssh} [remote]"; return 1 ;;
+    esac
+
+    git remote set-url "$remote" "$new" && print "$remote: $url -> $new"
+}
+_git-protocol() { _arguments '1:protocol:(https ssh)' '2:remote:($(git remote 2>/dev/null))' }
+compdef _git-protocol git-protocol
+
 # Plugins (installed with pacman)
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=#555555'
 [[ -r /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh ]] &&

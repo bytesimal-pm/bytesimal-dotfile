@@ -407,3 +407,11 @@ hl.window_rule({
     float  = true,
     center = true,
 })
+
+-- Dolphin: slightly see-through with blur, like kitty (colors in config/kdeglobals)
+hl.window_rule({
+    name  = "dolphin-opacity",
+    match = { class = "^org.kde.dolphin$" },
+
+    opacity = "0.9 0.85",
+})

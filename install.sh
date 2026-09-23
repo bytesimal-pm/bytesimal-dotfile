@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Hyprland desktop on a barebone Arch Linux install.
-# Installs the desktop packages (no user applications), links the configs
-# from this repo into $HOME, and sets up services, the keyring and zsh.
+# Installs the desktop packages plus the apps this repo themes (Dolphin,
+# Firefox, Discord/Vesktop), links the configs from this repo into $HOME,
+# and sets up services, the keyring and zsh.
 # Safe to re-run.
 set -euo pipefail
 
@@ -110,6 +111,24 @@ BASICS=(
     playerctl
 )
 
+# Apps themed by this repo: Dolphin (config/kdeglobals), Firefox
+# (config/firefox). Discord is Vesktop from the AUR, see AUR_PKGS.
+APPS=(
+    dolphin
+    kio-extras   # Dolphin thumbnails, network places
+    breeze-icons # Breeze Dark icons (config/kdeglobals)
+    firefox
+)
+
+# Built with yay (installed below if missing); needs base-devel + git
+AUR_BUILD=(
+    base-devel
+    git
+)
+AUR_PKGS=(
+    vesktop # Discord client with Vencord (themes, transparent window)
+)
+
 # Mesa + Vulkan, 64- and 32-bit (lib32-* is for Steam/Proton, needs multilib).
 # The Vulkan driver is picked from the GPU vendors found in /sys.
 GPU=(
@@ -146,6 +165,8 @@ PKGS=(
     "${SCREENSHOT[@]}"
     "${BASICS[@]}"
     "${GPU[@]}"
+    "${APPS[@]}"
+    "${AUR_BUILD[@]}"
 )
 
 # lib32-* packages live in multilib, which is commented out by default.
@@ -160,6 +181,19 @@ fi
 info "Updating system and installing ${#PKGS[@]} packages..."
 sudo pacman -Syu --needed --noconfirm --ask 4 "${PKGS[@]}"
 ok "Packages installed."
+
+# ---------------------------------------------------------------- AUR
+
+if ! command -v yay >/dev/null 2>&1; then
+    info "Installing yay (AUR helper)..."
+    tmp="$(mktemp -d)"
+    git clone --depth 1 https://aur.archlinux.org/yay-bin.git "$tmp/yay-bin"
+    (cd "$tmp/yay-bin" && makepkg -si --noconfirm)
+    rm -rf "$tmp"
+fi
+
+info "Installing AUR packages: ${AUR_PKGS[*]}..."
+yay -S --needed --noconfirm --answerdiff None --answerclean None "${AUR_PKGS[@]}"
 
 # ---------------------------------------------------------------- configs
 
@@ -184,6 +218,8 @@ for dir in hypr quickshell kitty fastfetch qt5ct qt6ct gtk-3.0 gtk-4.0; do
     link "config/$dir" "$HOME/.config/$dir"
 done
 link config/starship.toml "$HOME/.config/starship.toml"
+link config/kdeglobals "$HOME/.config/kdeglobals" # KDE apps (Dolphin) colors/font/icons
+link local/share/color-schemes/Monochrome.colors "$HOME/.local/share/color-schemes/Monochrome.colors"
 link home/.zshrc "$HOME/.zshrc"
 
 # The keyring's systemd socket starts the daemon, so hide the XDG autostart
@@ -192,6 +228,48 @@ link home/.zshrc "$HOME/.zshrc"
 for f in "$SCRIPT_DIR"/config/autostart/*.desktop; do
     link "config/autostart/$(basename -- "$f")" "$HOME/.config/autostart/$(basename -- "$f")"
 done
+
+# Discord (Vesktop): theme + Vencord settings (transparent window, theme on).
+# A fresh install gets a minimal settings file; Vencord fills in the rest.
+# An existing one is left alone (Vesktop may be running and would overwrite it).
+link config/vesktop/themes/monochrome.theme.css "$HOME/.config/vesktop/themes/monochrome.theme.css"
+VENCORD="$HOME/.config/vesktop/settings/settings.json"
+if [[ ! -s $VENCORD ]]; then
+    mkdir -p "$(dirname -- "$VENCORD")"
+    printf '{\n    "transparent": true,\n    "enabledThemes": ["monochrome.theme.css"]\n}\n' >"$VENCORD"
+    info "Turned on Vesktop transparency + theme"
+elif ! grep -q '"transparent": true' "$VENCORD" || ! grep -q monochrome.theme.css "$VENCORD"; then
+    warn "Vesktop: turn on Settings -> Vencord -> Transparent window,"
+    warn "and Themes -> monochrome.theme.css"
+fi
+
+# Firefox: the profile in use is the Default= line in installs.ini
+ff_profile() {
+    local ffdir profile
+    for ffdir in "$HOME/.config/mozilla/firefox" "$HOME/.mozilla/firefox"; do
+        [[ -f $ffdir/installs.ini ]] || continue
+        profile="$(sed -n 's/^Default=//p' "$ffdir/installs.ini" | head -n1)"
+        if [[ -n $profile && -d $ffdir/$profile ]]; then
+            echo "$ffdir/$profile"
+            return
+        fi
+    done
+}
+
+# A fresh install has no profile until Firefox's first start: start it
+# headless once so it creates one.
+if [[ -z "$(ff_profile)" ]] && ! pgrep -x firefox >/dev/null; then
+    info "Creating the Firefox profile..."
+    timeout 15 firefox --headless --no-remote about:blank >/dev/null 2>&1 || true
+fi
+
+FF_PROFILE="$(ff_profile)"
+if [[ -n $FF_PROFILE ]]; then
+    link config/firefox/chrome "$FF_PROFILE/chrome"
+    link config/firefox/user.js "$FF_PROFILE/user.js"
+else
+    warn "No Firefox profile found. Start Firefox once, then re-run install.sh."
+fi
 
 mkdir -p "$HOME/Pictures/Screenshots" "$HOME/Pictures/Wallpapers"
 xdg-user-dirs-update || true
