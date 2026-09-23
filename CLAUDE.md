@@ -40,7 +40,8 @@ Personal dotfiles for a Hyprland desktop on Arch Linux. `install.sh` turns a bar
 ## Config notes
 
 - Hyprland: check edits with `hyprctl reload && hyprctl configerrors`.
-- Quickshell hot-reloads on save; check with `qs log | tail`. Popups use `grabFocus`, which only works when the popup opens from real input, so it can't be opened from a timer or IPC to test it.
+- Quickshell hot-reloads on save; check with `qs log | tail`. If `~/.config/quickshell` itself is replaced (e.g. re-linked), the running `qs` keeps watching the old dir: restart it.
+- Tray (`Tray.qml`): right-click menus are drawn by `TrayMenu.qml` (QsMenuOpener in a `BarPopup`) because `QsMenuAnchor` needs QApplication mode. Drag icons to reorder; order saved in `Quickshell.statePath("tray-order.json")`. Popups use `grabFocus`, which only works when the popup opens from real input, so it can't be opened from a timer or IPC to test it.
 - Screenshots: `Print` (region), `Shift+Print` (full), `Super+Print` (monitor) → `~/Pictures/Screenshots` + clipboard.
 - Sound settings window: `qs ipc call mixer toggle`. Launcher: `qs ipc call launcher toggle` (Super+R).
 

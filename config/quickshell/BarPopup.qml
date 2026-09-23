@@ -10,6 +10,8 @@ PopupWindow {
     required property Item anchorItem
     property bool alignRight: false
     property int popupWidth: 320
+    property int padding: 14
+    property int spacing: 10
     default property alias content: body.data
 
     // Emitted right before it becomes visible
@@ -20,7 +22,7 @@ PopupWindow {
     // Compositor popup grab: clicks inside stay here, a click outside closes it
     grabFocus: true
     implicitWidth: popupWidth
-    implicitHeight: body.implicitHeight + 28
+    implicitHeight: body.implicitHeight + padding * 2
 
     // Popup top sits 8px below the bar
     anchor.window: barWindow
@@ -59,8 +61,8 @@ PopupWindow {
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.top: parent.top
-            anchors.margins: 14
-            spacing: 10
+            anchors.margins: popup.padding
+            spacing: popup.spacing
         }
     }
 }
