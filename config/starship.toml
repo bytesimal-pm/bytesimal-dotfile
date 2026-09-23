@@ -1,0 +1,63 @@
+# Starship — plain monochrome text (matches the anime-eye wallpaper)
+#
+#  ╭─  bytesimal in ~/Projects/dotfile on  main !1          3s  16:45
+#  ╰─❯
+#
+# Icons are written as \u escapes (Nerd Font glyphs) so they survive copy/paste.
+
+add_newline = true
+
+format = """
+[╭─](#4a4a4a)$os$username$directory$git_branch$git_status
+[╰─](#4a4a4a)$character"""
+
+right_format = "$cmd_duration$time"
+
+[os]
+disabled = false
+style = "#ffffff"
+format = "[$symbol ]($style)"
+
+[os.symbols]
+Arch = ""
+
+[username]
+show_always = true
+style_user = "bold #ffffff"
+style_root = "bold #707070"
+format = "[$user]($style) "
+
+[directory]
+style = "bold #ffffff"
+read_only_style = "#707070"
+read_only = " \U000f033e"
+format = "[in](#555555) [$path]($style)[$read_only]($read_only_style) "
+truncation_length = 3
+truncation_symbol = "…/"
+truncate_to_repo = true
+home_symbol = "~"
+
+[git_branch]
+symbol = ""
+style = "#ffffff"
+format = "[on](#555555) [$symbol $branch]($style) "
+
+[git_status]
+style = "#707070"
+format = "[($all_status$ahead_behind )]($style)"
+
+[cmd_duration]
+min_time = 2000
+style = "#707070"
+format = "[ $duration]($style)  "
+
+[time]
+disabled = false
+time_format = "%H:%M"
+style = "#4a4a4a"
+format = "[$time]($style)"
+
+[character]
+success_symbol = "[❯](bold #ffffff)"
+error_symbol = "[❯](bold #707070)"
+vimcmd_symbol = "[❮](bold #ffffff)"

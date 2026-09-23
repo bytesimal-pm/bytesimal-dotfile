@@ -1,0 +1,4 @@
+[Desktop Entry]
+Type=Application
+Name=gnome-keyring-pkcs11 (disabled; systemd socket handles it)
+Hidden=true

@@ -37,7 +37,7 @@ hl.monitor({
 -- Set programs that you use
 local terminal    = "kitty"
 local fileManager = "dolphin"
-local menu        = "hyprlauncher"
+local menu        = "qs ipc call launcher toggle" -- Quickshell launcher
 
 
 -------------------
@@ -56,7 +56,9 @@ local menu        = "hyprlauncher"
 -- end)
 
 hl.on("hyprland.start", function ()
+    hl.exec_cmd("systemctl --user start hyprpolkitagent") -- password prompts for apps that need root
     hl.exec_cmd("qs") -- Quickshell bar, config in ~/.config/quickshell
+    hl.exec_cmd("sleep 1 && nm-applet --indicator") -- network tray icon, after qs so the tray exists
 end)
 
 
@@ -279,7 +281,6 @@ hl.bind(mainMod .. " + F", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. " + R", hl.dsp.exec_cmd(menu))
 hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
 hl.bind(mainMod .. " + Y", hl.dsp.layout("togglesplit"))    -- dwindle only
-hl.bind(mainMod .. " + D", hl.dsp.exec_cmd("fuzzel"))
 
 -- Move focus with mainMod + arrow keys
 hl.bind(mainMod .. " + left",  hl.dsp.focus({ direction = "left" }))
@@ -372,10 +373,10 @@ hl.window_rule({
     no_focus = true,
 })
 
--- Blur behind the Quickshell bar
+-- Blur behind the Quickshell bar and launcher
 hl.layer_rule({
     name  = "blur-bar",
-    match = { namespace = "^quickshell-bar$" },
+    match = { namespace = "^quickshell-(bar|launcher)$" },
 
     blur         = true,
     ignore_alpha = 0.2,
@@ -396,4 +397,13 @@ hl.window_rule({
 
     move  = "20 monitor_h-120",
     float = true,
+})
+
+-- Quickshell sound settings window (Mixer.qml)
+hl.window_rule({
+    name  = "quickshell-mixer",
+    match = { title = "^Sound Settings$" },
+
+    float  = true,
+    center = true,
 })
