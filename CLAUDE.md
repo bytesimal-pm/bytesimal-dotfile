@@ -7,6 +7,7 @@ Personal dotfiles for a Hyprland desktop on Arch Linux. `install.sh` turns a bar
 - The repo is the source of truth. `install.sh` symlinks it into `$HOME`, so editing `~/.config/...` edits the repo:
   - `config/{hypr,quickshell,kitty,fastfetch,qt5ct,qt6ct,gtk-3.0,gtk-4.0}` → `~/.config/<name>` (whole dirs)
   - `config/starship.toml` → `~/.config/starship.toml`, `home/.zshrc` → `~/.zshrc`
+  - `local/share/fonts/sarabun/` → `~/.local/share/fonts/sarabun`, `config/fontconfig/fonts.conf` → `~/.config/fontconfig/fonts.conf`
   - `config/kdeglobals` → `~/.config/kdeglobals`, `local/share/color-schemes/Monochrome.colors` → `~/.local/share/color-schemes/`
   - `config/autostart/*.desktop` → linked one by one into `~/.config/autostart`
 - An existing file at a link target is moved to `<name>.bak.<date>`, never deleted. The `.bak` files are gitignored and outside the repo.
@@ -15,6 +16,8 @@ Personal dotfiles for a Hyprland desktop on Arch Linux. `install.sh` turns a bar
 - KDE apps (Dolphin) outside Plasma: colors come from the scheme named in `kdeglobals` `[UiSettings] ColorScheme` (the `.colors` file); the font comes from qt6ct/qt5ct `[Fonts]`, not kdeglobals. Hyprland rule `dolphin-opacity` adds see-through + blur.
 - Vesktop (Discord): `config/vesktop/themes/monochrome.theme.css`, linked by `install.sh`. Needs Vencord settings `transparent: true` + the theme enabled (in `~/.config/vesktop/settings/settings.json`, edit only while Vesktop is closed). Vencord doesn't notice edits made through the symlink: re-create the link (or Ctrl+R in Vesktop) to reload.
 - Firefox: `config/firefox/{user.js,chrome/}` linked into the profile named by `Default=` in `installs.ini` (`~/.config/mozilla/firefox`). `user.js` turns on userChrome/userContent and transparency; UI + new tab are themed, websites are not. Firefox reads them only at startup.
+- Thai font: Google Sarabun (16 styles, OFL, files in the repo). `fonts.conf`: Sarabun is the Thai fallback for JetBrains Mono / Noto / Adwaita, and first choice for `lang=th` sans-serif/serif (appended for monospace so Latin stays monospace). Don't put `accept` rules on the generic names (`sans-serif`...) — user config runs before the system defaults, so that made Sarabun the Latin font too. Chromium/Electron (Discord) look up missing glyphs with no family (only the character), which picked FreeSerif for Thai; the `append_last` Sarabun rule fixes that, and the Discord/Firefox CSS font stacks list Sarabun too. Check with `fc-match 'sans-serif:lang=th:weight=bold:slant=italic'` and `fc-match ':charset=0e2d'`. `noto-fonts-cjk` covers CJK/Korean decorations (`﹒ ㅡ`) that otherwise show as squares.
+- Plain Qt apps (e.g. `hyprland-share-picker`, the Screen/Window/Region picker): qt5ct/qt6ct `colors/Monochrome.conf` palette (`color_scheme_path` accepts `~`) + `qss/monochrome.qss` stylesheet (`stylesheets` needs a full path — `install.sh` rewrites it to the current `$HOME`). Hyprland rule `share-picker-opacity`. Vesktop's own Screen Share Picker is styled in the Vesktop theme (`.vcd-screen-picker-*`).
 - Wallpaper video (`~/Pictures/Wallpapers/anime-eye.mp4`, 118 MB) is **not** in the repo (too big for git). Without it the background is black.
 
 ## install.sh

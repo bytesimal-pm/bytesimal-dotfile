@@ -14,7 +14,7 @@
         --newtab-element-active-color: rgba(255, 255, 255, 0.14) !important;
         --newtab-border-color: rgba(255, 255, 255, 0.15) !important;
         --color-accent-primary: #ffffff !important;
-        font-family: "JetBrainsMono Nerd Font", sans-serif !important;
+        font-family: "JetBrainsMono Nerd Font", "Sarabun", sans-serif !important;
     }
 
     /* Search box: rounded, thin border */

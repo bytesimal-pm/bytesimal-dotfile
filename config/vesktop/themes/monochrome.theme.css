@@ -21,10 +21,10 @@
     --mono-hover: rgba(255, 255, 255, 0.08);
     --mono-active: rgba(255, 255, 255, 0.14);
 
-    --font-primary: "JetBrainsMono Nerd Font", "Noto Sans", sans-serif;
-    --font-display: "JetBrainsMono Nerd Font", "Noto Sans", sans-serif;
-    --font-headline: "JetBrainsMono Nerd Font", "Noto Sans", sans-serif;
-    --font-code: "JetBrainsMono Nerd Font", monospace;
+    --font-primary: "JetBrainsMono Nerd Font", "Sarabun", "Noto Sans", sans-serif;
+    --font-display: "JetBrainsMono Nerd Font", "Sarabun", "Noto Sans", sans-serif;
+    --font-headline: "JetBrainsMono Nerd Font", "Sarabun", "Noto Sans", sans-serif;
+    --font-code: "JetBrainsMono Nerd Font", "Sarabun", monospace;
 }
 
 /* Let the transparent window show the (blurred) desktop through */
@@ -162,16 +162,44 @@ body,
     color: #000000 !important;
 }
 
-/* Buttons that use brand color directly */
-[class*="colorBrand"]:not([class*="lookLink"]) {
-    background-color: var(--mono-white) !important;
-    color: #000000 !important;
-}
-
 /* Rounded message box, like the launcher/popups */
 [class*="channelTextArea"] [class*="scrollableContainer"] {
     border-radius: 10px;
     border: 1px solid var(--mono-border);
+}
+
+/* Vesktop's Screen Share Picker: selected option = white with black text */
+.vcd-screen-picker-option-radios {
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--mono-border);
+}
+.vcd-screen-picker-option-radio {
+    background-color: var(--mono-bg-input) !important;
+    border: none !important;
+    border-radius: 0 !important;
+    color: var(--mono-dim);
+}
+.vcd-screen-picker-option-radio:hover {
+    background-color: var(--mono-hover) !important;
+    color: var(--mono-text);
+}
+.vcd-screen-picker-option-radio[data-checked="true"] {
+    background-color: var(--mono-white) !important;
+}
+.vcd-screen-picker-option-radio[data-checked="true"],
+.vcd-screen-picker-option-radio[data-checked="true"] * {
+    color: #000000 !important;
+    font-weight: 600;
+}
+.vcd-screen-picker-card,
+.vcd-screen-picker-preview,
+.vcd-screen-picker-screen-label {
+    border-radius: 10px !important;
+}
+.vcd-screen-picker-screen-radio:has(input:checked) .vcd-screen-picker-screen-label,
+.vcd-screen-picker-screen-radio[data-checked="true"] {
+    outline: 2px solid var(--mono-white);
 }
 
 ::selection {

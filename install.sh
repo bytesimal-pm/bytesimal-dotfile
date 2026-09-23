@@ -89,6 +89,7 @@ THEME=(
     ttf-jetbrains-mono-nerd
     noto-fonts
     noto-fonts-emoji
+    noto-fonts-cjk # CJK/Korean glyphs: decorations like ﹒ ㅡ in names show as squares without it
 )
 
 AUDIO=(
@@ -217,10 +218,23 @@ info "Linking configs..."
 for dir in hypr quickshell kitty fastfetch qt5ct qt6ct gtk-3.0 gtk-4.0; do
     link "config/$dir" "$HOME/.config/$dir"
 done
+
+# qt5ct/qt6ct don't expand ~ in the stylesheet path, so the repo stores a
+# full path. Point it at this $HOME if the repo was made on another account.
+for v in 5 6; do
+    sed -i "s|^stylesheets=.*/\.config/qt${v}ct/|stylesheets=$HOME/.config/qt${v}ct/|" \
+        "$SCRIPT_DIR/config/qt${v}ct/qt${v}ct.conf"
+done
 link config/starship.toml "$HOME/.config/starship.toml"
 link config/kdeglobals "$HOME/.config/kdeglobals" # KDE apps (Dolphin) colors/font/icons
 link local/share/color-schemes/Monochrome.colors "$HOME/.local/share/color-schemes/Monochrome.colors"
 link home/.zshrc "$HOME/.zshrc"
+
+# Thai font: Sarabun (all weights + italics, in the repo) and the fontconfig
+# rules that make Thai text use it
+link local/share/fonts/sarabun "$HOME/.local/share/fonts/sarabun"
+link config/fontconfig/fonts.conf "$HOME/.config/fontconfig/fonts.conf"
+fc-cache -f >/dev/null 2>&1 || true
 
 # The keyring's systemd socket starts the daemon, so hide the XDG autostart
 # entries — otherwise a second daemon starts alongside it. Linked one by

@@ -84,7 +84,7 @@
 menupopup,
 panel,
 .tabbrowser-tab {
-    font-family: "JetBrainsMono Nerd Font", sans-serif !important;
+    font-family: "JetBrainsMono Nerd Font", "Sarabun", sans-serif !important;
 }
 
 /* Tabs: selected tab is a white pill with black text, like the active workspace */

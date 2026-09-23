@@ -415,3 +415,12 @@ hl.window_rule({
 
     opacity = "0.9 0.85",
 })
+
+-- Screen share picker (xdg-desktop-portal-hyprland): see-through like Dolphin;
+-- colors/widgets come from the qt6ct palette + stylesheet
+hl.window_rule({
+    name  = "share-picker-opacity",
+    match = { class = "^hyprland-share-picker$" },
+
+    opacity = "0.92 0.88",
+})
