@@ -59,6 +59,9 @@ PanelWindow {
             Volume {
                 barWindow: bar
             }
+            Battery {
+                barWindow: bar
+            }
         }
     }
 }

@@ -44,6 +44,7 @@ Personal dotfiles for a Hyprland desktop on Arch Linux. `install.sh` turns a bar
 - Tray (`Tray.qml`): right-click menus are drawn by `TrayMenu.qml` (QsMenuOpener in a `BarPopup`) because `QsMenuAnchor` needs QApplication mode. Drag icons to reorder; order saved in `Quickshell.statePath("tray-order.json")`. Popups use `grabFocus`, which only works when the popup opens from real input, so it can't be opened from a timer or IPC to test it.
 - Screenshots: `Print` (region), `Shift+Print` (full), `Super+Print` (monitor) → `~/Pictures/Screenshots` + clipboard.
 - Sound settings window: `qs ipc call mixer toggle`. Launcher: `qs ipc call launcher toggle` (Super+R).
+- Battery (`Battery.qml` + `BatteryPopup.qml`): `Quickshell.Services.UPower` display device (needs `upower`, D-Bus activated). Only shown when it's a laptop battery (`isLaptopBattery`), so desktops don't get it. Blinks below 15% while discharging; click for status/time left/power/health.
 - Internet popup (`Network.qml` icon + `NetworkPopup.qml`): Ethernet and Wi-Fi through the built-in `Quickshell.Networking` module (talks to NetworkManager over D-Bus, no nmcli). Right-click the icon toggles Wi-Fi. Scans only while the popup is open. The list freezes while a row is expanded, so a half-typed password survives rescans. Enterprise (EAP) networks aren't supported there (use nmcli).
 
 ## TODO

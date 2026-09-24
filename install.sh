@@ -109,6 +109,7 @@ SCREENSHOT=(
 BASICS=(
     brightnessctl
     playerctl
+    upower # battery info for the bar (Battery.qml)
 )
 
 # Apps themed by this repo: Dolphin (config/kdeglobals), Firefox
