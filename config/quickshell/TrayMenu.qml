@@ -151,7 +151,7 @@ BarPopup {
                         popup.stack = popup.stack.concat([entry.modelData]);
                     } else {
                         entry.modelData.triggered();
-                        popup.visible = false;
+                        popup.close();
                     }
                 }
             }

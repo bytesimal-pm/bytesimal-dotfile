@@ -75,7 +75,7 @@ BarPopup {
     TextButton {
         text: "\u{f0493}  Keyboard settings"
         onClicked: {
-            popup.visible = false;
+            popup.close();
             popup.kbd.open();
         }
     }

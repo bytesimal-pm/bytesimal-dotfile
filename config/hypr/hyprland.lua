@@ -160,10 +160,11 @@ hl.curve("easy",           { type = "spring", mass = 1, stiffness = 238.1191, da
 hl.animation({ leaf = "global",        enabled = true,  speed = 10,   bezier = "default" })
 hl.animation({ leaf = "border",        enabled = true,  speed = 5.39, bezier = "easeOutQuint" })
 hl.animation({ leaf = "windows",       enabled = true,  speed = 4.79, spring = "easy" })
-hl.animation({ leaf = "windowsIn",     enabled = true,  speed = 4.1,  spring = "easy",         style = "popin 87%" })
-hl.animation({ leaf = "windowsOut",    enabled = true,  speed = 1.49, bezier = "linear",       style = "popin 87%" })
+-- No popin on open/close: the Quickshell glitch (WindowGlitch.qml) is the effect, fadeIn/fadeOut do the alpha
+hl.animation({ leaf = "windowsIn",     enabled = false })
+hl.animation({ leaf = "windowsOut",    enabled = false })
 hl.animation({ leaf = "fadeIn",        enabled = true,  speed = 1.73, bezier = "almostLinear" })
-hl.animation({ leaf = "fadeOut",       enabled = true,  speed = 1.46, bezier = "almostLinear" })
+hl.animation({ leaf = "fadeOut",       enabled = true,  speed = 2.5,  bezier = "almostLinear" })
 hl.animation({ leaf = "fade",          enabled = true,  speed = 3.03, bezier = "quick" })
 hl.animation({ leaf = "layers",        enabled = true,  speed = 3.81, bezier = "easeOutQuint" })
 hl.animation({ leaf = "layersIn",      enabled = true,  speed = 4,    bezier = "easeOutQuint", style = "fade" })
@@ -327,6 +328,9 @@ hl.bind(mainMod .. " + mouse_up",   hl.dsp.focus({ workspace = "e-1" }))
 
 -- Move/resize windows with mainMod + LMB/RMB and dragging
 hl.bind(mainMod .. " + mouse:272", hl.dsp.window.drag(),   { mouse = true })
+-- Tell Quickshell when a drag starts/ends, for its glitch (WindowGlitch.qml); no drag event exists
+hl.bind(mainMod .. " + mouse:272", hl.dsp.exec_cmd("qs ipc call windowglitch dragStart"), { non_consuming = true })
+hl.bind(mainMod .. " + mouse:272", hl.dsp.exec_cmd("qs ipc call windowglitch dragEnd"),   { non_consuming = true, release = true })
 hl.bind(mainMod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
 
 -- Laptop multimedia keys for volume and LCD brightness
@@ -395,6 +399,13 @@ hl.layer_rule({
 
     blur         = true,
     ignore_alpha = 0.2,
+})
+
+-- Workspace switch glitch (Quickshell Glitch.qml): no fade-in, it has its own
+hl.layer_rule({
+    name    = "glitch-no-anim",
+    match   = { namespace = "^quickshell-glitch$" },
+    no_anim = true,
 })
 
 -- Layer rules also return a handle.

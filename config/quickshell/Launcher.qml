@@ -51,10 +51,13 @@ PanelWindow {
         update();
         visible = true;
         search.forceActiveFocus();
+        reveal.open();
     }
 
+    // Glitches out, then hides
     function close() {
-        visible = false;
+        if (visible)
+            reveal.close();
     }
 
     function launch(entry) {
@@ -292,5 +295,16 @@ PanelWindow {
                 leftPadding: 6
             }
         }
+    }
+
+    // Glitch in/out over the box
+    GlitchReveal {
+        id: reveal
+        x: box.x
+        y: box.y
+        width: box.width
+        height: box.height
+        content: box
+        onClosed: launcher.visible = false
     }
 }

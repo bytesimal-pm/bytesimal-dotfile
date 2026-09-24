@@ -3,6 +3,8 @@ import Quickshell
 
 // Popup box that opens below a bar item. Children go into a padded Column.
 // Centered under the item, or right-aligned with its right edge (alignRight).
+// Glitches in on open and out on close() (GlitchReveal); a click outside is closed by the
+// compositor grab, which hides it at once.
 PopupWindow {
     id: popup
 
@@ -36,7 +38,7 @@ PopupWindow {
 
     function toggle() {
         if (visible) {
-            visible = false;
+            close();
             return;
         }
         if (Date.now() - closedAt < 250) return;
@@ -47,9 +49,16 @@ PopupWindow {
         anchor.rect.height = barWindow.height + 8;
         aboutToOpen();
         visible = true;
+        reveal.open();
+    }
+
+    function close() {
+        if (visible)
+            reveal.close();
     }
 
     Rectangle {
+        id: panel
         anchors.fill: parent
         color: "#cc000000"
         radius: Theme.radius
@@ -64,5 +73,12 @@ PopupWindow {
             anchors.margins: popup.padding
             spacing: popup.spacing
         }
+    }
+
+    GlitchReveal {
+        id: reveal
+        anchors.fill: parent
+        content: panel
+        onClosed: popup.visible = false
     }
 }

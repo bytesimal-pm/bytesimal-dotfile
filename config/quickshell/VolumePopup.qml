@@ -49,7 +49,7 @@ BarPopup {
             hoverEnabled: true
             cursorShape: Qt.PointingHandCursor
             onClicked: {
-                popup.visible = false;
+                popup.close();
                 Mixer.open();
             }
         }

@@ -18,6 +18,12 @@ ShellRoot {
             Bar {
                 screen: perScreen.modelData
             }
+            Glitch {
+                screen: perScreen.modelData
+            }
+            WindowGlitch {
+                screen: perScreen.modelData
+            }
         }
     }
 
