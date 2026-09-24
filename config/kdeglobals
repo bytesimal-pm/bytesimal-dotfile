@@ -20,6 +20,11 @@ Theme=breeze-dark
 [KDE]
 contrast=4
 
+# File previews in Dolphin, without "directorythumbnail": its folder-with-contents
+# thumbnails are drawn outside the color scheme (blue Breeze folder)
+[PreviewSettings]
+Plugins=appimagethumbnail,audiothumbnail,comicbookthumbnail,cursorthumbnail,djvuthumbnail,ebookthumbnail,exrthumbnail,imagethumbnail,jpegthumbnail,kraorathumbnail,opendocumentthumbnail,svgthumbnail,windowsexethumbnail,windowsimagethumbnail
+
 [Colors:View]
 BackgroundNormal=0,0,0
 BackgroundAlternate=18,18,18

@@ -241,6 +241,8 @@ link home/.zshrc "$HOME/.zshrc"
 # rules that make Thai text use it
 link local/share/fonts/sarabun "$HOME/.local/share/fonts/sarabun"
 link config/fontconfig/fonts.conf "$HOME/.config/fontconfig/fonts.conf"
+# Grey Dolphin app icon (bar, launcher); the user hicolor dir wins over /usr/share
+link local/share/icons/hicolor/scalable/apps/org.kde.dolphin.svg "$HOME/.local/share/icons/hicolor/scalable/apps/org.kde.dolphin.svg"
 fc-cache -f >/dev/null 2>&1 || true
 
 # The keyring's systemd socket starts the daemon, so hide the XDG autostart
@@ -295,6 +297,11 @@ fi
 mkdir -p "$HOME/Pictures/Screenshots" "$HOME/Pictures/Wallpapers"
 link wallpapers/shizuku-monochrome-4k.mp4 "$HOME/Pictures/Wallpapers/shizuku-monochrome-4k.mp4" # Wallpaper.qml
 xdg-user-dirs-update || true
+# Breeze's user-desktop icon is full color; folder-desktop follows the color scheme
+desktop_dir="$(xdg-user-dir DESKTOP 2>/dev/null || echo "$HOME/Desktop")"
+if [[ -d $desktop_dir && ! -e $desktop_dir/.directory ]]; then
+    printf '[Desktop Entry]\nIcon=folder-desktop\n' > "$desktop_dir/.directory"
+fi
 
 # ---------------------------------------------------------------- services
 
