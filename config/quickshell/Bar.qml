@@ -56,6 +56,9 @@ PanelWindow {
             Network {
                 barWindow: bar
             }
+            BluetoothIcon {
+                barWindow: bar
+            }
             Volume {
                 barWindow: bar
             }

@@ -51,6 +51,11 @@ NETWORK=(
     networkmanager
 )
 
+BLUETOOTH=(
+    bluez       # daemon, the bar's Bluetooth popup talks to it over D-Bus
+    bluez-utils # bluetoothctl (pairing devices that need a PIN)
+)
+
 KEYRING=(
     gnome-keyring
     libsecret
@@ -158,6 +163,7 @@ PKGS=(
     "${CORE[@]}"
     "${PORTALS[@]}"
     "${NETWORK[@]}"
+    "${BLUETOOTH[@]}"
     "${KEYRING[@]}"
     "${TERMINAL[@]}"
     "${SHELL_PKGS[@]}"
@@ -295,6 +301,9 @@ xdg-user-dirs-update || true
 # brought the network up for this install. It starts on the next boot.
 info "Enabling NetworkManager (starts on next boot)..."
 sudo systemctl enable NetworkManager.service
+
+info "Enabling Bluetooth..."
+sudo systemctl enable --now bluetooth.service || true
 
 info "Enabling audio services..."
 systemctl --user enable --now pipewire pipewire-pulse wireplumber || true

@@ -84,50 +84,6 @@ BarPopup {
         elide: Text.ElideRight
     }
 
-    // Text button: dim, bright on hover
-    component TextButton: Label {
-        id: action
-        signal clicked()
-        color: actionArea.containsMouse ? Theme.text : Theme.dim
-        MouseArea {
-            id: actionArea
-            anchors.fill: parent
-            anchors.margins: -4
-            hoverEnabled: true
-            cursorShape: Qt.PointingHandCursor
-            onClicked: action.clicked()
-        }
-    }
-
-    // Row like DeviceList.qml: white when active
-    component ListRow: Rectangle {
-        id: row
-        property bool active: false
-        property alias hovered: rowArea.containsMouse
-        signal clicked(var mouse)
-        default property alias content: rowContent.data
-
-        height: popup.rowHeight
-        radius: 6
-        color: active ? "#ffffff" : hovered ? "#1affffff" : "transparent"
-
-        MouseArea {
-            id: rowArea
-            anchors.fill: parent
-            hoverEnabled: true
-            acceptedButtons: Qt.LeftButton | Qt.RightButton
-            cursorShape: Qt.PointingHandCursor
-            onClicked: mouse => row.clicked(mouse)
-        }
-
-        Item {
-            id: rowContent
-            anchors.fill: parent
-            anchors.leftMargin: 10
-            anchors.rightMargin: 10
-        }
-    }
-
     // ── Status ──
 
     Item {
@@ -222,35 +178,12 @@ BarPopup {
             text: "WI-FI"
         }
 
-        // On/off switch
-        Rectangle {
+        Switch {
             id: toggle
-            readonly property bool on: Networking.wifiEnabled
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
-            width: 30
-            height: 16
-            radius: 8
-            color: on ? "#ffffff" : "transparent"
-            border.color: on ? "#ffffff" : Theme.dim
-            border.width: 1
-
-            Rectangle {
-                width: 10
-                height: 10
-                radius: 5
-                anchors.verticalCenter: parent.verticalCenter
-                x: toggle.on ? toggle.width - width - 3 : 3
-                color: toggle.on ? "#000000" : Theme.dim
-                Behavior on x { NumberAnimation { duration: 120 } }
-            }
-
-            MouseArea {
-                anchors.fill: parent
-                anchors.margins: -4
-                cursorShape: Qt.PointingHandCursor
-                onClicked: Networking.wifiEnabled = !Networking.wifiEnabled
-            }
+            on: Networking.wifiEnabled
+            onToggled: Networking.wifiEnabled = !Networking.wifiEnabled
         }
     }
 

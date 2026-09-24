@@ -12,7 +12,7 @@ Personal dotfiles for a Hyprland desktop on Arch Linux. `install.sh` turns a bar
   - `config/autostart/*.desktop` → linked one by one into `~/.config/autostart`
 - An existing file at a link target is moved to `<name>.bak.<date>`, never deleted. The `.bak` files are gitignored and outside the repo.
 - `config/hypr/hyprland.lua`: Lua config format (Hyprland 0.56+).
-- `config/quickshell/`: bar, launcher, volume/calendar/internet popups, sound settings window (`Mixer.qml`), video wallpaper. Shared bits: `BarPopup.qml`, `VolumeRow.qml`, `Theme.qml`.
+- `config/quickshell/`: bar, launcher, volume/calendar/internet/bluetooth/battery popups, sound settings window (`Mixer.qml`), video wallpaper. Shared bits: `BarPopup.qml`, `VolumeRow.qml`, `Theme.qml`.
 - KDE apps (Dolphin) outside Plasma: colors come from the scheme named in `kdeglobals` `[UiSettings] ColorScheme` (the `.colors` file); the font comes from qt6ct/qt5ct `[Fonts]`, not kdeglobals. Hyprland rule `dolphin-opacity` adds see-through + blur.
 - Vesktop (Discord): `config/vesktop/themes/monochrome.theme.css`, linked by `install.sh`. Needs Vencord settings `transparent: true` + the theme enabled (in `~/.config/vesktop/settings/settings.json`, edit only while Vesktop is closed). Vencord doesn't notice edits made through the symlink: re-create the link (or Ctrl+R in Vesktop) to reload.
 - Firefox: `config/firefox/{user.js,chrome/}` linked into the profile named by `Default=` in `installs.ini` (`~/.config/mozilla/firefox`). `user.js` turns on userChrome/userContent and transparency; UI + new tab are themed, websites are not. Firefox reads them only at startup.
@@ -22,9 +22,10 @@ Personal dotfiles for a Hyprland desktop on Arch Linux. `install.sh` turns a bar
 
 ## install.sh
 
-- Package groups are bash arrays (CORE, PORTALS, NETWORK, KEYRING, TERMINAL, SHELL_PKGS, DESKTOP_SHELL, THEME, AUDIO, SCREENSHOT, BASICS, GPU, APPS, AUR_BUILD, AUR_PKGS). Add new packages to the matching group.
+- Package groups are bash arrays (CORE, PORTALS, NETWORK, BLUETOOTH, KEYRING, TERMINAL, SHELL_PKGS, DESKTOP_SHELL, THEME, AUDIO, SCREENSHOT, BASICS, GPU, APPS, AUR_BUILD, AUR_PKGS). Add new packages to the matching group.
 - Apps: only the ones this repo themes: Dolphin + Firefox (APPS, pacman) and Vesktop (AUR_PKGS). No other user applications.
 - GPU: Mesa + Vulkan 32/64-bit. The Vulkan driver is picked from `/sys/class/drm/card*/device/vendor` (AMD → radeon, Intel → intel; NVIDIA prints a warning). Enables multilib in `/etc/pacman.conf` for the lib32-* packages.
+- `bluetooth.service` (BlueZ) is enabled with `--now`.
 - NetworkManager is enabled without `--now` (starts on next boot, so it doesn't fight the network used for the install).
 - Keyring: `gnome-keyring-daemon.socket` starts the daemon; the autostart entries (`Hidden=true`) stop a second one. PAM lines in `/etc/pam.d/login` (unlock on TTY login) and `/etc/pam.d/passwd` (keep passwords in sync).
 - Sets zsh as the login shell. Hyprland is started by hand from the TTY (no display manager, no auto-start).
@@ -45,6 +46,8 @@ Personal dotfiles for a Hyprland desktop on Arch Linux. `install.sh` turns a bar
 - Screenshots: `Print` (region), `Shift+Print` (full), `Super+Print` (monitor) → `~/Pictures/Screenshots` + clipboard.
 - Sound settings window: `qs ipc call mixer toggle`. Launcher: `qs ipc call launcher toggle` (Super+R).
 - Battery (`Battery.qml` + `BatteryPopup.qml`): `Quickshell.Services.UPower` display device (needs `upower`, D-Bus activated). Only shown when it's a laptop battery (`isLaptopBattery`), so desktops don't get it. Blinks below 15% while discharging; click for status/time left/power/health.
+- Bluetooth (`BluetoothIcon.qml` + `BluetoothPopup.qml`; not `Bluetooth.qml`, that name shadows the `Quickshell.Bluetooth` singleton): built-in `Quickshell.Bluetooth` module (BlueZ over D-Bus). Hidden without an adapter/BlueZ. `qs` only looks for BlueZ at startup (a config reload isn't enough): if `bluetooth.service` started after it, restart `qs` (`pkill -x qs; setsid -f qs`). Right-click the icon toggles Bluetooth; scans only while the popup is open. No pairing agent, so only "Just Works" pairing (headphones, mice, speakers); devices that need a PIN/passkey: `bluetoothctl`.
+- Popup building blocks shared by the Internet and Bluetooth popups: `ListRow.qml`, `TextButton.qml`, `Switch.qml`.
 - Internet popup (`Network.qml` icon + `NetworkPopup.qml`): Ethernet and Wi-Fi through the built-in `Quickshell.Networking` module (talks to NetworkManager over D-Bus, no nmcli). Right-click the icon toggles Wi-Fi. Scans only while the popup is open. The list freezes while a row is expanded, so a half-typed password survives rescans. Enterprise (EAP) networks aren't supported there (use nmcli).
 
 ## TODO

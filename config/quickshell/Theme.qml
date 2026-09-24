@@ -44,6 +44,22 @@ Singleton {
         return (charging ? plugged : normal)[step];
     }
 
+    // Nerd Font Bluetooth glyphs
+    readonly property string bluetoothIcon: "\u{f00af}"
+    readonly property string bluetoothOffIcon: "\u{f00b2}"
+    readonly property string bluetoothConnectedIcon: "\u{f00b1}"
+
+    // Glyph for a BlueZ device icon name (freedesktop names like "audio-headset")
+    function deviceIcon(name) {
+        return name === "audio-headset" || name === "audio-headphones" ? "\u{f02cb}"
+            : name === "audio-card" ? "\u{f04c3}"
+            : name === "input-mouse" ? "\u{f037d}"
+            : name === "input-keyboard" ? "\u{f030c}"
+            : name === "input-gaming" ? "\u{f0296}"
+            : name === "phone" ? "\u{f011c}"
+            : bluetoothIcon;
+    }
+
     // Nerd Font network glyphs
     readonly property string ethernetIcon: "\u{f0200}"
     readonly property string wifiOffIcon: "\u{f092e}"
