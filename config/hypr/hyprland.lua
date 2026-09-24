@@ -170,9 +170,9 @@ hl.animation({ leaf = "layersIn",      enabled = true,  speed = 4,    bezier = "
 hl.animation({ leaf = "layersOut",     enabled = true,  speed = 1.5,  bezier = "linear",       style = "fade" })
 hl.animation({ leaf = "fadeLayersIn",  enabled = true,  speed = 1.79, bezier = "almostLinear" })
 hl.animation({ leaf = "fadeLayersOut", enabled = true,  speed = 1.39, bezier = "almostLinear" })
-hl.animation({ leaf = "workspaces",    enabled = true,  speed = 1.94, bezier = "almostLinear", style = "fade" })
-hl.animation({ leaf = "workspacesIn",  enabled = true,  speed = 1.21, bezier = "almostLinear", style = "fade" })
-hl.animation({ leaf = "workspacesOut", enabled = true,  speed = 1.94, bezier = "almostLinear", style = "fade" })
+hl.animation({ leaf = "workspaces",    enabled = false })
+hl.animation({ leaf = "workspacesIn",  enabled = false })
+hl.animation({ leaf = "workspacesOut", enabled = false })
 hl.animation({ leaf = "zoomFactor",    enabled = true,  speed = 7,    bezier = "quick" })
 
 -- Ref https://wiki.hypr.land/Configuring/Basics/Workspace-Rules/

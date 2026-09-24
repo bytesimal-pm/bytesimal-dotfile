@@ -5,7 +5,7 @@ import Quickshell
 
 Singleton {
     // Wallpaper (video, played in Wallpaper.qml)
-    readonly property string wallpaper: Quickshell.env("HOME") + "/Pictures/Wallpapers/zenitsu-white.webm"
+    readonly property string wallpaper: Quickshell.env("HOME") + "/Pictures/Wallpapers/shizuku-monochrome-4k.mp4"
 
     // Colors (monochrome, to match the wallpaper)
     readonly property color bg: "#99000000"      // ~60% opaque black

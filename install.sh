@@ -293,6 +293,7 @@ else
 fi
 
 mkdir -p "$HOME/Pictures/Screenshots" "$HOME/Pictures/Wallpapers"
+link wallpapers/shizuku-monochrome-4k.mp4 "$HOME/Pictures/Wallpapers/shizuku-monochrome-4k.mp4" # Wallpaper.qml
 xdg-user-dirs-update || true
 
 # ---------------------------------------------------------------- services
@@ -353,7 +354,5 @@ cat <<'EOF'
 Next steps:
   - Reboot, log in on the TTY and run `Hyprland`.
     The first login creates the keyring; PAM unlocks it from then on.
-  - Wallpaper: put a video at ~/Pictures/Wallpapers/anime-eye.mp4
-    (path set in config/quickshell/Theme.qml). Without it the background is black.
   - Keys: Super+Q terminal, Super+R launcher, Print screenshot.
 EOF
