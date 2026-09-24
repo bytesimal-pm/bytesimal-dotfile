@@ -230,13 +230,24 @@ hl.config({
 ---- INPUT ----
 ---------------
 
+-- Keyboard settings, picked in Quickshell's Keyboard Settings window
+-- (KeyboardSettings.qml writes this file, then reloads the config):
+-- layout = "us,th", variant = ",pat", numlock = true,
+-- switch = "grp:alt_shift_toggle" (xkb, modifier-only shortcuts) | "bind:SUPER + code:65" (a bind below) | ""
+local kbFile = (os.getenv("XDG_STATE_HOME") or (os.getenv("HOME") .. "/.local/state")) .. "/hypr/keyboard.lua"
+local kbOk, kb = pcall(dofile, kbFile)
+if not kbOk or type(kb) ~= "table" then kb = {} end
+local kbSwitch = type(kb.switch) == "string" and kb.switch or ""
+
 hl.config({
     input = {
-        kb_layout  = "us",
-        kb_variant = "",
+        kb_layout  = kb.layout or "us",
+        kb_variant = kb.variant or "",
         kb_model   = "",
-        kb_options = "",
+        kb_options = kbSwitch:find("^grp:") and kbSwitch or "",
         kb_rules   = "",
+
+        numlock_by_default = kb.numlock == true,
 
         follow_mouse = 1,
 
@@ -279,6 +290,12 @@ hl.bind(mainMod .. " + F", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. " + R", hl.dsp.exec_cmd(menu))
 hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
 hl.bind(mainMod .. " + Y", hl.dsp.layout("togglesplit"))    -- dwindle only
+
+-- Recorded layout switch shortcut that xkb can't do (a key + modifiers), bound by
+-- keycode so it's the same key in every layout. pcall: a bad key string only drops it.
+if kbSwitch:find("^bind:") then
+    pcall(hl.bind, kbSwitch:sub(6), hl.dsp.exec_cmd("hyprctl switchxkblayout all next"))
+end
 
 -- Move focus with mainMod + arrow keys
 hl.bind(mainMod .. " + left",  hl.dsp.focus({ direction = "left" }))
@@ -397,10 +414,10 @@ hl.window_rule({
     float = true,
 })
 
--- Quickshell sound settings window (Mixer.qml)
+-- Quickshell settings windows (Mixer.qml, KeyboardSettings.qml)
 hl.window_rule({
-    name  = "quickshell-mixer",
-    match = { title = "^Sound Settings$" },
+    name  = "quickshell-settings",
+    match = { title = "^(Sound|Keyboard) Settings$" },
 
     float  = true,
     center = true,

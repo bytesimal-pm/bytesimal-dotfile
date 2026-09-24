@@ -59,6 +59,9 @@ PanelWindow {
             BluetoothIcon {
                 barWindow: bar
             }
+            Keyboard {
+                barWindow: bar
+            }
             Volume {
                 barWindow: bar
             }

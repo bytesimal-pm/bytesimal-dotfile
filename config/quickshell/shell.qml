@@ -3,6 +3,7 @@ import Quickshell
 ShellRoot {
     // Singletons load on first use; load Mixer now so its IPC target exists
     readonly property var mixer: Mixer
+    readonly property var keyboard: KeyboardSettings
 
     Variants {
         model: Quickshell.screens
