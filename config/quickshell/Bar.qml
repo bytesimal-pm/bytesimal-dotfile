@@ -53,6 +53,9 @@ PanelWindow {
             Tray {
                 barWindow: bar
             }
+            Network {
+                barWindow: bar
+            }
             Volume {
                 barWindow: bar
             }

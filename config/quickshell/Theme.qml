@@ -5,7 +5,7 @@ import Quickshell
 
 Singleton {
     // Wallpaper (video, played in Wallpaper.qml)
-    readonly property string wallpaper: Quickshell.env("HOME") + "/Pictures/Wallpapers/anime-eye.mp4"
+    readonly property string wallpaper: Quickshell.env("HOME") + "/Pictures/Wallpapers/zenitsu-white.webm"
 
     // Colors (monochrome, to match the wallpaper)
     readonly property color bg: "#99000000"      // ~60% opaque black
@@ -32,5 +32,21 @@ Singleton {
             : percent < 34 ? "\u{f057f}"
             : percent < 67 ? "\u{f0580}"
             : "\u{f057e}";
+    }
+
+    // Nerd Font network glyphs
+    readonly property string ethernetIcon: "\u{f0200}"
+    readonly property string wifiOffIcon: "\u{f092e}"
+    readonly property string wifiNoneIcon: "\u{f092f}"   // on, not connected
+    readonly property string lockIcon: "\u{f033e}"
+
+    // Wi-Fi bars for signal strength 0..1; alert = connected but no internet
+    function wifiIcon(strength, alert) {
+        const bars = strength < 0.25 ? "\u{f091f}"
+            : strength < 0.5 ? "\u{f0922}"
+            : strength < 0.75 ? "\u{f0925}"
+            : "\u{f0928}";
+        // Each "-alert" glyph comes right after its bars glyph
+        return alert ? String.fromCodePoint(bars.codePointAt(0) + 1) : bars;
     }
 }

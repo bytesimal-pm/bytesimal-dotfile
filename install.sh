@@ -49,7 +49,6 @@ PORTALS=(
 
 NETWORK=(
     networkmanager
-    network-manager-applet # tray icon
 )
 
 KEYRING=(
@@ -128,6 +127,7 @@ AUR_BUILD=(
 )
 AUR_PKGS=(
     vesktop # Discord client with Vencord (themes, transparent window)
+    fzf-tab # zsh Tab completion in an fzf picker (home/.zshrc)
 )
 
 # Mesa + Vulkan, 64- and 32-bit (lib32-* is for Steam/Proton, needs multilib).

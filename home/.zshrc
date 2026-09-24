@@ -9,9 +9,14 @@ setopt AUTO_CD INTERACTIVE_COMMENTS
 
 # Completion
 autoload -Uz compinit && compinit
+_comp_options+=(globdots)   # complete hidden files too
 zstyle ':completion:*' menu select
-zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'   # case-insensitive
+# Case-insensitive, and match partial words anywhere in the name
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|=*' 'l:|=* r:|=*'
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+# Group headers ([file], [branch], ...)
+zstyle ':completion:*' group-name ''
+zstyle ':completion:*:descriptions' format '[%d]'
 
 # Keybinds (emacs style)
 bindkey -e
@@ -53,11 +58,6 @@ git-protocol() {
 _git-protocol() { _arguments '1:protocol:(https ssh)' '2:remote:($(git remote 2>/dev/null))' }
 compdef _git-protocol git-protocol
 
-# Plugins (installed with pacman)
-ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=#555555'
-[[ -r /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh ]] &&
-    source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
-
 # Fuzzy finder: Ctrl+R history, Ctrl+T files, Alt+C cd into folder
 if command -v fzf >/dev/null; then
     export FZF_DEFAULT_OPTS="--height 40% --layout reverse --border rounded --prompt '❯ ' --pointer '▌' --marker '•' \
@@ -67,20 +67,32 @@ if command -v fzf >/dev/null; then
         export FZF_DEFAULT_COMMAND='fd --type f --hidden --exclude .git'
         export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
         export FZF_ALT_C_COMMAND='fd --type d --hidden --exclude .git'
-        # Tab completion lists only the folder's own entries, hidden ones last
-        # $1 = folder, rest = extra fd flags
-        _fzf_ls() {
-            local dir=$1; shift
-            { fd -d1 "$@" . "$dir" | sort
-              fd -d1 -H --exclude .git "$@" '^\.' "$dir" | sort } | sed 's|^\./||'
-        }
-        _fzf_compgen_path() { _fzf_ls "$1" }
-        _fzf_compgen_dir()  { _fzf_ls "$1" --type d }
     fi
-    # Tab opens fzf for files/folders (default needs a ** trigger)
-    export FZF_COMPLETION_TRIGGER=''
-    source <(fzf --zsh)
+    # Key bindings only: fzf's own Tab completion (`**`) would sit under
+    # fzf-tab and replace zsh's completions with a recursive file list
+    unset FZF_COMPLETION_TRIGGER
+    source /usr/share/fzf/key-bindings.zsh
 fi
+
+# fzf-tab (AUR): Tab opens every zsh completion (files, commands, flags,
+# git branches...) in fzf. Type to filter, / goes into the highlighted
+# folder, < > switch groups. Loaded after compinit and `fzf --zsh` (both
+# bind Tab), before the plugins below that wrap widgets.
+if [[ -r /usr/share/zsh/plugins/fzf-tab/fzf-tab.plugin.zsh ]] && command -v fzf >/dev/null; then
+    source /usr/share/zsh/plugins/fzf-tab/fzf-tab.plugin.zsh
+    zstyle ':completion:*' menu no   # fzf-tab does the selecting
+    zstyle ':fzf-tab:*' use-fzf-default-opts yes   # monochrome colors above
+    zstyle ':fzf-tab:*' fzf-flags --height=50% --cycle --info=inline
+    zstyle ':fzf-tab:*' show-group full
+    zstyle ':fzf-tab:*' switch-group '<' '>'
+    zstyle ':fzf-tab:*' continuous-trigger '/'
+    zstyle ':fzf-tab:complete:(cd|z|ls):*' fzf-preview 'ls -1A --color=always -- $realpath'
+fi
+
+# Plugins (installed with pacman)
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=#555555'
+[[ -r /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh ]] &&
+    source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 # Prompt
 command -v starship >/dev/null && eval "$(starship init zsh)"

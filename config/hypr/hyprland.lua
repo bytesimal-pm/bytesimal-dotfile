@@ -51,14 +51,12 @@ local menu        = "qs ipc call launcher toggle" -- Quickshell launcher
 --
 -- hl.on("hyprland.start", function () 
 --   hl.exec_cmd(terminal)
---   hl.exec_cmd("nm-applet")
 --   hl.exec_cmd("waybar & hyprpaper & firefox")
 -- end)
 
 hl.on("hyprland.start", function ()
     hl.exec_cmd("systemctl --user start hyprpolkitagent") -- password prompts for apps that need root
     hl.exec_cmd("qs") -- Quickshell bar, config in ~/.config/quickshell
-    hl.exec_cmd("sleep 1 && nm-applet --indicator") -- network tray icon, after qs so the tray exists
 end)
 
 
