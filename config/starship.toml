@@ -25,7 +25,7 @@ Arch = ""
 show_always = true
 style_user = "bold #ffffff"
 style_root = "bold #707070"
-format = "[thaleban]($style) "
+format = "[$user]($style) "
 
 [directory]
 style = "bold #ffffff"

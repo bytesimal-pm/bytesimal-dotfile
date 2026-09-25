@@ -13,9 +13,11 @@ ShellRoot {
             required property var modelData
 
             Wallpaper {
+                id: wallpaper
                 screen: perScreen.modelData
             }
             Bar {
+                id: bar
                 screen: perScreen.modelData
             }
             Glitch {
@@ -23,6 +25,12 @@ ShellRoot {
             }
             WindowGlitch {
                 screen: perScreen.modelData
+            }
+            // Boot screen after login, until the wallpaper and bar are up
+            Splash {
+                screen: perScreen.modelData
+                wallpaper: wallpaper
+                bar: bar
             }
         }
     }

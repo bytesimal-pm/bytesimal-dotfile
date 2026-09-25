@@ -51,6 +51,10 @@ NETWORK=(
     networkmanager
 )
 
+MIRRORS=(
+    reflector # ranks pacman mirrors by speed (config/reflector), weekly timer
+)
+
 BLUETOOTH=(
     bluez       # daemon, the bar's Bluetooth popup talks to it over D-Bus
     bluez-utils # bluetoothctl (pairing devices that need a PIN)
@@ -111,6 +115,11 @@ SCREENSHOT=(
     wl-clipboard # copy to clipboard
 )
 
+# Login screen: greetd runs a Quickshell greeter in a small Hyprland (greeter/)
+GREETER=(
+    greetd
+)
+
 BASICS=(
     brightnessctl
     playerctl
@@ -163,6 +172,7 @@ PKGS=(
     "${CORE[@]}"
     "${PORTALS[@]}"
     "${NETWORK[@]}"
+    "${MIRRORS[@]}"
     "${BLUETOOTH[@]}"
     "${KEYRING[@]}"
     "${TERMINAL[@]}"
@@ -171,16 +181,60 @@ PKGS=(
     "${THEME[@]}"
     "${AUDIO[@]}"
     "${SCREENSHOT[@]}"
+    "${GREETER[@]}"
     "${BASICS[@]}"
     "${GPU[@]}"
     "${APPS[@]}"
     "${AUR_BUILD[@]}"
 )
 
+# Copy a repo file to a system path (root-owned, so copied, not linked).
+# A different existing file is kept as <name>.bak.<date>.
+# Returns 1 if the destination already had the same file.
+copy_root() {
+    local src="$SCRIPT_DIR/$1" dest="$2"
+    if sudo cmp -s -- "$src" "$dest"; then
+        return 1
+    fi
+    if sudo test -e "$dest"; then
+        sudo mv -- "$dest" "$dest.bak.$STAMP"
+        warn "Backed up $dest -> $dest.bak.$STAMP"
+    fi
+    if ! sudo install -Dm644 -- "$src" "$dest"; then
+        warn "Couldn't install $dest"
+        return 1
+    fi
+    info "Installed $dest"
+}
+
+# Copy etc/<path> from this repo to /etc/<path>
+copy_etc() { copy_root "etc/$1" "/etc/$1"; }
+
+# Download 10 packages at a time (default 5)
+if ! grep -q '^ParallelDownloads = 10$' /etc/pacman.conf; then
+    info "Setting ParallelDownloads = 10 in /etc/pacman.conf..."
+    sudo sed -i 's/^#\?ParallelDownloads.*/ParallelDownloads = 10/' /etc/pacman.conf
+fi
+
 # lib32-* packages live in multilib, which is commented out by default.
 if ! grep -q '^\[multilib\]' /etc/pacman.conf; then
     info "Enabling multilib in /etc/pacman.conf..."
     sudo sed -i '/^#\[multilib\]/,/^#Include/ s/^#//' /etc/pacman.conf
+fi
+
+# ---------------------------------------------------------------- mirrors
+
+# Rank the mirrors before the big download (etc/xdg/reflector/reflector.conf)
+info "Installing reflector..."
+sudo pacman -Syu --needed --noconfirm reflector
+copy_etc xdg/reflector/reflector.conf || true
+
+MIRRORLIST=/etc/pacman.d/mirrorlist
+info "Finding the fastest mirrors (this takes a minute)..."
+sudo cp -a "$MIRRORLIST" "$MIRRORLIST.bak.$STAMP"
+if ! sudo systemctl start reflector.service || ! sudo test -s "$MIRRORLIST"; then
+    warn "reflector failed, keeping the old mirrorlist."
+    sudo cp -a "$MIRRORLIST.bak.$STAMP" "$MIRRORLIST"
 fi
 
 # -Syu (not -Sy) to avoid partial upgrades.
@@ -303,12 +357,130 @@ if [[ -d $desktop_dir && ! -e $desktop_dir/.directory ]]; then
     printf '[Desktop Entry]\nIcon=folder-desktop\n' > "$desktop_dir/.directory"
 fi
 
+# ---------------------------------------------------------------- login screen
+
+# The greeter runs as the `greeter` user, which can't read $HOME, so its
+# files are copied (not linked): re-run this script after editing them.
+info "Setting up the login screen (greetd)..."
+copy_etc greetd/config.toml || true
+copy_root greeter/hyprland.lua /etc/greetd/hyprland.lua || true
+GREETER_QS=/etc/greetd/quickshell
+for f in greeter/*.qml; do
+    copy_root "$f" "$GREETER_QS/$(basename -- "$f")" || true
+done
+# Shared with the desktop shell (config/quickshell)
+for f in Theme.qml Wallpaper.qml GlitchReveal.qml TextButton.qml \
+         shaders/wallpaper.frag.qsb shaders/windowglitch.frag.qsb assets/shizuku-depth.png; do
+    copy_root "config/quickshell/$f" "$GREETER_QS/$f" || true
+done
+# greeter/hyprland.lua points QS_WALLPAPER here
+copy_root wallpapers/shizuku-monochrome-4k.mp4 /usr/local/share/wallpapers/shizuku-monochrome-4k.mp4 || true
+
+# Unlock the login keyring when logging in through the greeter. With no
+# /etc/pam.d/greetd-greeter, greetd uses this file for the `greeter` user too:
+# skip the keyring for it (no password, so "couldn't unlock the login keyring").
+PAM_GREETD=/etc/pam.d/greetd
+SKIP_GREETER='[success=1 default=ignore] pam_succeed_if.so quiet user = greeter'
+if sudo test -e "$PAM_GREETD" && ! sudo grep -q pam_gnome_keyring.so "$PAM_GREETD"; then
+    info "Adding gnome-keyring to $PAM_GREETD..."
+    printf '%s\n' \
+        "auth       $SKIP_GREETER" \
+        'auth       optional     pam_gnome_keyring.so' \
+        "session    $SKIP_GREETER" \
+        'session    optional     pam_gnome_keyring.so auto_start' |
+        sudo tee -a "$PAM_GREETD" >/dev/null
+elif sudo test -e "$PAM_GREETD" && ! sudo grep -q 'user = greeter' "$PAM_GREETD"; then
+    # Added by an older version of this script, without the skip
+    info "Skipping gnome-keyring for the greeter user in $PAM_GREETD..."
+    sudo sed -i \
+        -e "s/^auth\( *\)optional\( *\)pam_gnome_keyring.so/auth       $SKIP_GREETER\n&/" \
+        -e "s/^session\( *\)optional\( *\)pam_gnome_keyring.so/session    $SKIP_GREETER\n&/" \
+        "$PAM_GREETD"
+fi
+
+# Quiet boot: no kernel messages or text cursor on tty1, which shows for a
+# moment between the greeter and the session (the splash takes over after).
+QUIET_FLAGS=(quiet loglevel=3 vt.global_cursor_default=0)
+missing_flags() { local f; for f in "${QUIET_FLAGS[@]}"; do [[ " $1 " == *" $f "* ]] || printf '%s ' "$f"; done; }
+if sudo test -f /etc/kernel/cmdline && grep -qs '^[^#]*_uki=' /etc/mkinitcpio.d/*.preset; then
+    # Unified kernel image (e.g. Limine / systemd-boot): cmdline is baked in by mkinitcpio
+    add="$(missing_flags "$(sudo cat /etc/kernel/cmdline)")"
+    if [[ -n $add ]]; then
+        info "Adding '${add% }' to /etc/kernel/cmdline and rebuilding the UKI..."
+        sudo cp -a /etc/kernel/cmdline "/etc/kernel/cmdline.bak.$STAMP"
+        sudo sed -i "1s/\$/ ${add% }/" /etc/kernel/cmdline
+        if ! sudo mkinitcpio -P; then
+            warn "mkinitcpio failed, restoring /etc/kernel/cmdline."
+            sudo cp -a "/etc/kernel/cmdline.bak.$STAMP" /etc/kernel/cmdline
+            sudo mkinitcpio -P || true
+        fi
+    fi
+    # A cmdline in limine.conf replaces the one in the UKI
+    for conf in /boot/limine.conf /boot/limine/limine.conf /boot/EFI/limine/limine.conf /boot/EFI/BOOT/limine.conf; do
+        if sudo grep -qs '^[[:space:]]*cmdline:' "$conf"; then
+            warn "$conf sets its own cmdline: add ${QUIET_FLAGS[*]} there too."
+        fi
+    done
+elif sudo test -f /boot/grub/grub.cfg && grep -qs '^GRUB_CMDLINE_LINUX_DEFAULT=' /etc/default/grub; then
+    add="$(missing_flags "$(sed -n 's/^GRUB_CMDLINE_LINUX_DEFAULT="\(.*\)"/\1/p' /etc/default/grub)")"
+    if [[ -n $add ]]; then
+        info "Adding '${add% }' to GRUB_CMDLINE_LINUX_DEFAULT..."
+        sudo cp -a /etc/default/grub "/etc/default/grub.bak.$STAMP"
+        sudo sed -i "s/^\(GRUB_CMDLINE_LINUX_DEFAULT=\".*\)\"/\1 ${add% }\"/" /etc/default/grub
+        sudo grub-mkconfig -o /boot/grub/grub.cfg || true
+    fi
+else
+    warn "Unknown bootloader: add ${QUIET_FLAGS[*]} to the kernel command line yourself."
+fi
+
+# No --now: it would take over tty1 (and this session) right away.
+# Starts on the next boot; Ctrl+Alt+F2 still gives a text login.
+sudo systemctl enable greetd.service || true
+
 # ---------------------------------------------------------------- services
 
 # Enable only (no --now): starting it now could fight with whatever
 # brought the network up for this install. It starts on the next boot.
 info "Enabling NetworkManager (starts on next boot)..."
 sudo systemctl enable NetworkManager.service
+
+# ---------------------------------------------------------------- network tuning
+
+# TCP: BBR + bigger buffers for far-away servers (etc/sysctl.d/99-network.conf)
+info "Tuning TCP (BBR, buffers)..."
+copy_etc modules-load.d/bbr.conf || true
+copy_etc sysctl.d/99-network.conf || true
+sudo modprobe tcp_bbr || true
+sudo sysctl --system >/dev/null || warn "sysctl --system failed."
+
+# Wi-Fi power saving off; NetworkManager reads it on the next (re)start
+copy_etc NetworkManager/conf.d/wifi-powersave.conf || true
+
+# DNS: systemd-resolved as a local cache with encrypted DNS. resolv.conf
+# only moves to its stub once it's running, so DNS never goes dead mid-install.
+info "Setting up systemd-resolved (DNS cache, DNS over TLS)..."
+copy_etc systemd/resolved.conf.d/dns.conf && sudo systemctl restart systemd-resolved.service || true
+sudo systemctl enable --now systemd-resolved.service || true
+STUB=/run/systemd/resolve/stub-resolv.conf
+if systemctl is-active --quiet systemd-resolved.service && [[ -e $STUB ]]; then
+    if [[ "$(readlink /etc/resolv.conf)" != "$STUB" ]]; then
+        if [[ -e /etc/resolv.conf || -L /etc/resolv.conf ]]; then
+            sudo mv /etc/resolv.conf "/etc/resolv.conf.bak.$STAMP"
+        fi
+        sudo ln -s "$STUB" /etc/resolv.conf
+        info "Linked /etc/resolv.conf -> $STUB"
+    fi
+    copy_etc NetworkManager/conf.d/dns.conf || true
+else
+    warn "systemd-resolved isn't running; leaving DNS as it is."
+fi
+# Apply the NetworkManager files now if it's running (a reload keeps the connection)
+if systemctl is-active --quiet NetworkManager.service; then
+    sudo nmcli general reload || true
+fi
+
+info "Enabling weekly mirror refresh..."
+sudo systemctl enable reflector.timer || true
 
 info "Enabling Bluetooth..."
 sudo systemctl enable --now bluetooth.service || true
@@ -359,7 +531,8 @@ ok "Done!"
 cat <<'EOF'
 
 Next steps:
-  - Reboot, log in on the TTY and run `Hyprland`.
+  - Reboot and log in on the login screen (greetd); it starts Hyprland.
     The first login creates the keyring; PAM unlocks it from then on.
+    Text login fallback: Ctrl+Alt+F2 (`sudo systemctl disable greetd` to go back).
   - Keys: Super+Q terminal, Super+R launcher, Print screenshot.
 EOF

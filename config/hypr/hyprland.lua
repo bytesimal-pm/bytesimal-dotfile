@@ -222,6 +222,7 @@ hl.config({
 hl.config({
     misc = {
         force_default_wallpaper = 0,     -- Wallpaper is a video played by Quickshell
+        background_color        = 0x000000, -- black until then (Splash.qml covers the load)
         disable_hyprland_logo   = true,
     },
 })

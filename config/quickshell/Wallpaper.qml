@@ -42,6 +42,11 @@ PanelWindow {
 
     onFullscreenChanged: fullscreen ? video.pause() : video.play()
 
+    // For Splash.qml: the shader loaded and is on screen / the video shows its first frame.
+    // (A prebuilt .qsb never reports ShaderEffect.Compiled, only Uncompiled or Error.)
+    readonly property bool shaderReady: fx.status !== ShaderEffect.Error && backingWindowVisible
+    readonly property bool videoReady: video.position > 0
+
     SequentialAnimation {
         id: vacuumAnim
         NumberAnimation { target: fx; property: "vacuum"; to: 1; duration: 350; easing.type: Easing.InCubic }

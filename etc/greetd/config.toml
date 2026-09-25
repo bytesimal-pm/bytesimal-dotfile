@@ -1,0 +1,8 @@
+# Login screen: a small Hyprland running the Quickshell greeter (greeter/ in the repo,
+# copied to /etc/greetd/ by install.sh).
+[terminal]
+vt = 1
+
+[default_session]
+command = "Hyprland --config /etc/greetd/hyprland.lua"
+user = "greeter"
