@@ -1,0 +1,178 @@
+/* Monochrome over Adwaita-dark (settings.ini), matching the Qt palette
+ * (qt6ct/colors/Monochrome.conf) and Dolphin (Monochrome.colors: view #000, window/header #0a0a0a): near-black greys, white
+ * selection, no blue. GTK3 Adwaita builds most colors in, so besides the
+ * named colors the widgets that show them are restyled below.
+ * GTK reads this at app start: reopen apps to see edits. */
+
+@define-color theme_bg_color #0a0a0a;
+@define-color theme_fg_color #e6e6e6;
+@define-color theme_base_color #000000;
+@define-color theme_text_color #e6e6e6;
+@define-color theme_selected_bg_color #e6e6e6;
+@define-color theme_selected_fg_color #000000;
+@define-color insensitive_bg_color #0a0a0a;
+@define-color insensitive_fg_color #707070;
+@define-color insensitive_base_color #000000;
+@define-color theme_unfocused_bg_color #0a0a0a;
+@define-color theme_unfocused_fg_color #e6e6e6;
+@define-color theme_unfocused_base_color #000000;
+@define-color theme_unfocused_text_color #e6e6e6;
+@define-color theme_unfocused_selected_bg_color #b4b4b4;
+@define-color theme_unfocused_selected_fg_color #000000;
+@define-color borders #2a2a2a;
+@define-color unfocused_borders #2a2a2a;
+
+/* Surfaces */
+window, dialog, .background, messagedialog .dialog-action-area {
+    background-color: #0a0a0a;
+    color: #e6e6e6;
+}
+
+.view, treeview.view, iconview, textview text, list, scrolledwindow viewport,
+filechooser .view, placesview .view {
+    background-color: #000000;
+    color: #e6e6e6;
+}
+
+treeview.view header button, treeview.view header button:hover {
+    background-color: #0a0a0a;
+    background-image: none;
+    color: #b4b4b4;
+    border-color: #2a2a2a;
+}
+
+headerbar, .titlebar, menubar, toolbar, .primary-toolbar,
+filechooser .dialog-action-box {
+    background-color: #0a0a0a;
+    background-image: none;
+    border-color: #2a2a2a;
+    box-shadow: none;
+    color: #e6e6e6;
+}
+headerbar:backdrop, .titlebar:backdrop {
+    background-color: #0a0a0a;
+}
+
+.sidebar, placessidebar, placessidebar list, stacksidebar list {
+    background-color: #0a0a0a;
+    border-color: #2a2a2a;
+}
+
+separator { background-color: #2a2a2a; }
+
+popover, popover.background, menu, .menu, .context-menu, .csd menu {
+    background-color: #0a0a0a;
+    border-color: #3a3a3a;
+    color: #e6e6e6;
+}
+menuitem:hover, menu menuitem:hover, modelbutton:hover {
+    background-color: #2a2a2a;
+    color: #ffffff;
+}
+
+tooltip, tooltip.background {
+    background-color: #000000;
+    border: 1px solid #3a3a3a;
+    color: #e6e6e6;
+}
+
+/* Selection: white with black text */
+*:selected, *:selected:focus, .view:selected, treeview.view:selected,
+iconview:selected, list row:selected, row:selected, flowbox flowboxchild:selected,
+placessidebar row:selected, .sidebar row:selected,
+entry selection, textview text selection, label selection {
+    background-color: #e6e6e6;
+    color: #000000;
+}
+*:selected:backdrop, row:selected:backdrop, treeview.view:selected:backdrop {
+    background-color: #b4b4b4;
+    color: #000000;
+}
+row:selected label, row:selected image { color: #000000; }
+row:hover:not(:selected) { background-color: #1e1e1e; }
+
+/* Buttons */
+button {
+    background-color: #1a1a1a;
+    background-image: none;
+    border-color: #3a3a3a;
+    box-shadow: none;
+    text-shadow: none;
+    color: #e6e6e6;
+}
+button:hover { background-color: #2a2a2a; }
+button:active, button:checked { background-color: #3a3a3a; color: #ffffff; }
+button:disabled { background-color: #0a0a0a; color: #707070; }
+button.flat, headerbar button.flat, .path-bar button:not(:checked) {
+    background-color: transparent;
+    border-color: transparent;
+}
+button.flat:hover { background-color: #2a2a2a; }
+
+button.suggested-action, button.default {
+    background-color: #e6e6e6;
+    background-image: none;
+    border-color: #e6e6e6;
+    color: #000000;
+}
+button.suggested-action:hover, button.default:hover { background-color: #ffffff; }
+button.suggested-action:disabled { background-color: #3a3a3a; color: #707070; }
+button.suggested-action label, button.default label { color: #000000; }
+
+button.destructive-action {
+    background-color: #3a3a3a;
+    background-image: none;
+    border-color: #707070;
+    color: #ffffff;
+}
+
+/* Inputs */
+entry, spinbutton:not(.vertical), combobox button.combo {
+    background-color: #000000;
+    background-image: none;
+    border-color: #3a3a3a;
+    box-shadow: none;
+    color: #e6e6e6;
+}
+entry:focus, spinbutton:focus {
+    border-color: #b4b4b4;
+    box-shadow: inset 0 0 0 1px #b4b4b4;
+}
+
+check:checked, radio:checked, check:indeterminate {
+    background-color: #e6e6e6;
+    background-image: none;
+    border-color: #e6e6e6;
+    color: #000000;
+}
+switch { background-color: #1a1a1a; border-color: #3a3a3a; }
+switch:checked { background-color: #e6e6e6; border-color: #e6e6e6; }
+switch slider { background-color: #3a3a3a; border-color: #3a3a3a; background-image: none; }
+switch:checked slider { background-color: #000000; }
+
+progressbar progress, scale highlight, levelbar block.filled {
+    background-color: #e6e6e6;
+    background-image: none;
+    border-color: #e6e6e6;
+}
+progressbar trough, scale trough, levelbar trough {
+    background-color: #2a2a2a;
+    border-color: #2a2a2a;
+}
+scale slider { background-color: #e6e6e6; background-image: none; border-color: #b4b4b4; }
+
+scrollbar { background-color: transparent; border-color: transparent; }
+scrollbar slider { background-color: #3a3a3a; }
+scrollbar slider:hover { background-color: #707070; }
+
+notebook > header { background-color: #0a0a0a; border-color: #2a2a2a; }
+notebook > header tab:checked { box-shadow: inset 0 -2px #e6e6e6; }
+notebook > header.top > tabs > tab:checked { box-shadow: inset 0 -2px #e6e6e6; }
+stackswitcher button:checked { background-color: #e6e6e6; color: #000000; }
+
+*:link, link { color: #e6e6e6; }
+*:visited { color: #b4b4b4; }
+
+/* Font: same as Qt (qt6ct [Fonts]), Firefox UI and the bar */
+* { font-family: "JetBrainsMono Nerd Font", "Sarabun", monospace; }
+window, popover, menu, tooltip { font-size: 10pt; }

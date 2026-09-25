@@ -443,6 +443,15 @@ hl.window_rule({
     opacity = "0.9 0.85",
 })
 
+-- GTK windows themed by config/gtk-3.0/gtk.css: see-through like Dolphin.
+-- Only virt-manager's main list (not the VM console) and Firefox's file dialogs.
+hl.window_rule({
+    name  = "gtk-opacity",
+    match = { title = "^(Virtual Machine Manager|File Upload.*|Enter name of file to save to.*|Save As.*)$" },
+
+    opacity = "0.9 0.85",
+})
+
 -- Screen share picker (xdg-desktop-portal-hyprland): see-through like Dolphin;
 -- colors/widgets come from the qt6ct palette + stylesheet
 hl.window_rule({
