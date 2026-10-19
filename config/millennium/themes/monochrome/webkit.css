@@ -1,0 +1,91 @@
+/* Store / community pages inside the Steam window (these are websites, so
+   only the chrome-like parts are themed; screenshots and art keep their colors,
+   like Firefox, where websites aren't themed). */
+
+body,
+body *:not(svg):not(path) {
+    font-family: "JetBrainsMono Nerd Font", "Sarabun", "Noto Sans", sans-serif !important;
+}
+
+body,
+.responsive_page_frame,
+.page_background_holder,
+.home_page_background,
+.game_page_background,
+.store_nav_bg,
+.store_nav,
+.responsive_page_template_content {
+    background: #0a0a0a !important;
+    background-image: none !important;
+}
+
+/* Store nav bar (Browse / Recommendations / search): blue gradient → dark */
+#store_nav_area .store_nav_bg,
+.store_nav .tab,
+.store_nav .tab > span,
+.store_nav .search_area,
+#store_search_link,
+#store_nav_search_term {
+    background: #141414 !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+}
+.store_nav .tab:hover,
+.store_nav .tab.focus {
+    background: rgba(255, 255, 255, 0.14) !important;
+}
+#store_search_link img {
+    filter: grayscale(1) brightness(1.6);
+}
+
+/* Links: white instead of Steam blue */
+a,
+a:visited {
+    color: #e6e6e6;
+}
+a:hover {
+    color: #ffffff;
+}
+
+/* Buttons: blue ones flat grey, green (buy / play) white with black text */
+[class*="btn_blue"],
+[class*="btnv6_blue"],
+.btn_medium,
+.btn_small {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: #e6e6e6 !important;
+}
+[class*="btn_blue"]:hover,
+[class*="btnv6_blue"]:hover {
+    background: rgba(255, 255, 255, 0.14) !important;
+    color: #ffffff !important;
+}
+[class*="btn_green"],
+[class*="btnv6_green"] {
+    background: #ffffff !important;
+    border: none !important;
+}
+[class*="btn_green"] *,
+[class*="btnv6_green"] * {
+    background: transparent !important;
+    color: #000000 !important;
+}
+[class*="btn_green"]:hover,
+[class*="btnv6_green"]:hover {
+    background: #d0d0d0 !important;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-track {
+    background: transparent !important;
+}
+
+::selection {
+    background: #ffffff;
+    color: #000000;
+}

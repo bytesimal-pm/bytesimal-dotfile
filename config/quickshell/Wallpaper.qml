@@ -40,7 +40,11 @@ PanelWindow {
     property real behind: hasWindows ? 1 : 0
     Behavior on behind { NumberAnimation { duration: 400; easing.type: Easing.OutCubic } }
 
-    onFullscreenChanged: fullscreen ? video.pause() : video.play()
+    // Set from shell.qml (qs ipc call wallpaper toggle): plain black, video stopped
+    property bool off: false
+    onOffChanged: off ? video.stop() : video.play()
+
+    onFullscreenChanged: off ? undefined : fullscreen ? video.pause() : video.play()
 
     // For Splash.qml: the shader loaded and is on screen / the video shows its first frame.
     // (A prebuilt .qsb never reports ShaderEffect.Compiled, only Uncompiled or Error.)
@@ -67,11 +71,9 @@ PanelWindow {
         }
     }
 
-    IpcHandler {
-        target: "wallpaper"
-        function vacuum(): void { vacuumAnim.restart(); }
-        function glint(): void { glintAnim.restart(); }
-    }
+    // Called by the "wallpaper" IpcHandler in shell.qml
+    function vacuum(): void { vacuumAnim.restart(); }
+    function glint(): void { glintAnim.restart(); }
 
     // What the shader distorts: the video and the clock
     Item {
@@ -131,6 +133,7 @@ PanelWindow {
     ShaderEffect {
         id: fx
         anchors.fill: parent
+        visible: !root.off
 
         // Depth mask for the parallax: white = Shizuku. Made from the video: her outline has a
         // red/cyan fringe the grey spiral doesn't, filled in from the background side.

@@ -127,12 +127,14 @@ BASICS=(
 )
 
 # Apps themed by this repo: Dolphin (config/kdeglobals), Firefox
-# (config/firefox). Discord is Vesktop from the AUR, see AUR_PKGS.
+# (config/firefox), Steam (config/millennium). Discord is Vesktop from the
+# AUR, see AUR_PKGS; so is Millennium, Steam's theme loader.
 APPS=(
     dolphin
     kio-extras   # Dolphin thumbnails, network places
     breeze-icons # Breeze Dark icons (config/kdeglobals)
     firefox
+    steam        # multilib (enabled below)
 )
 
 # Built with yay (installed below if missing); needs base-devel + git
@@ -141,7 +143,8 @@ AUR_BUILD=(
     git
 )
 AUR_PKGS=(
-    vesktop # Discord client with Vencord (themes, transparent window)
+    vesktop    # Discord client with Vencord (themes, transparent window)
+    millennium # Steam client themes (config/millennium)
     fzf-tab # zsh Tab completion in an fzf picker (home/.zshrc)
 )
 
@@ -297,6 +300,10 @@ link local/share/fonts/sarabun "$HOME/.local/share/fonts/sarabun"
 link config/fontconfig/fonts.conf "$HOME/.config/fontconfig/fonts.conf"
 # Grey Dolphin app icon (bar, launcher); the user hicolor dir wins over /usr/share
 link local/share/icons/hicolor/scalable/apps/org.kde.dolphin.svg "$HOME/.local/share/icons/hicolor/scalable/apps/org.kde.dolphin.svg"
+# Cursor: Shiori Novella (XCursor theme, set in hyprland.lua + gtk settings.ini).
+# The `default` theme inherits it, for apps that ignore XCURSOR_THEME.
+link local/share/icons/Shiori-Novella "$HOME/.local/share/icons/Shiori-Novella"
+link local/share/icons/default/index.theme "$HOME/.local/share/icons/default/index.theme"
 fc-cache -f >/dev/null 2>&1 || true
 
 # The keyring's systemd socket starts the daemon, so hide the XDG autostart
@@ -318,6 +325,26 @@ if [[ ! -s $VENCORD ]]; then
 elif ! grep -q '"transparent": true' "$VENCORD" || ! grep -q monochrome.theme.css "$VENCORD"; then
     warn "Vesktop: turn on Settings -> Vencord -> Transparent window,"
     warn "and Themes -> monochrome.theme.css"
+fi
+
+# Steam: Millennium theme. Steam installs itself into ~/.local/share/Steam
+# on its first start, and Millennium's package hook only hooks into Steam
+# folders that already exist, so both steps wait for that first start.
+STEAM_DIR="$HOME/.local/share/Steam"
+if [[ -d $STEAM_DIR/ubuntu12_32 ]]; then
+    link config/millennium/themes/monochrome "$STEAM_DIR/millennium/themes/monochrome"
+    # Same links as the millennium package's post_install
+    if [[ -e /usr/lib/millennium/libmillennium_bootstrap_x86.so && ! -L $STEAM_DIR/ubuntu12_32/libXtst.so.6 ]]; then
+        ln -sf /usr/lib/millennium/libmillennium_bootstrap_x86.so "$STEAM_DIR/ubuntu12_32/libXtst.so.6"
+        ln -sf /usr/lib/millennium/libmillennium_bootstrap_hhx64.so "$STEAM_DIR/ubuntu12_64/libXtst.so.6"
+        info "Hooked Millennium into Steam"
+    fi
+    MILLENNIUM_CFG="${XDG_CONFIG_HOME:-$HOME/.config}/millennium/config.json"
+    if ! grep -qs '"activeTheme": *"monochrome"' "$MILLENNIUM_CFG"; then
+        warn "Steam: pick the theme in Steam -> Millennium -> Themes -> Monochrome"
+    fi
+else
+    warn "Steam isn't set up yet. Start Steam once, then re-run install.sh (Millennium theme)."
 fi
 
 # Firefox: the profile in use is the Default= line in installs.ini
@@ -375,6 +402,18 @@ for f in Theme.qml Wallpaper.qml GlitchReveal.qml TextButton.qml \
 done
 # greeter/hyprland.lua points QS_WALLPAPER here
 copy_root wallpapers/shizuku-monochrome-4k.mp4 /usr/local/share/wallpapers/shizuku-monochrome-4k.mp4 || true
+# Cursor theme (greeter/hyprland.lua). /usr/share/icons is on the default
+# cursor search path of both Hyprland and Qt; duplicates stay symlinks.
+CURSOR_SRC=local/share/icons/Shiori-Novella CURSOR_DEST=/usr/share/icons/Shiori-Novella
+sudo mkdir -p "$CURSOR_DEST/cursors"
+for f in "$SCRIPT_DIR/$CURSOR_SRC"/index.theme "$SCRIPT_DIR/$CURSOR_SRC"/cursors/*; do
+    rel=${f#"$SCRIPT_DIR/$CURSOR_SRC/"}
+    if [[ -L $f ]]; then
+        sudo ln -sfn -- "$(readlink -- "$f")" "$CURSOR_DEST/$rel"
+    else
+        copy_root "$CURSOR_SRC/$rel" "$CURSOR_DEST/$rel" || true
+    fi
+done
 
 # Unlock the login keyring when logging in through the greeter. With no
 # /etc/pam.d/greetd-greeter, greetd uses this file for the `greeter` user too:
@@ -519,6 +558,8 @@ fi
 # session; gtk settings.ini and GTK_THEME in hyprland.lua cover that.
 gsettings set org.gnome.desktop.interface color-scheme prefer-dark 2>/dev/null || true
 gsettings set org.gnome.desktop.interface gtk-theme Adwaita-dark 2>/dev/null || true
+gsettings set org.gnome.desktop.interface cursor-theme Shiori-Novella 2>/dev/null || true
+gsettings set org.gnome.desktop.interface cursor-size 32 2>/dev/null || true
 
 # Portals that started before PipeWire have no screen sharing.
 # Restart them now that PipeWire is up (only works inside Hyprland).

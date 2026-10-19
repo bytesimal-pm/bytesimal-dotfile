@@ -66,8 +66,12 @@ end)
 
 -- See https://wiki.hypr.land/Configuring/Advanced-and-Cool/Environment-variables/
 
-hl.env("XCURSOR_SIZE", "24")
-hl.env("HYPRCURSOR_SIZE", "24")
+-- Cursor: Shiori Novella (XCursor, ~/.local/share/icons). Drawn at 32 px only,
+-- so 32 keeps the pixel art sharp. No hyprcursor version: Hyprland falls back
+-- to XCURSOR_THEME.
+hl.env("XCURSOR_THEME", "Shiori-Novella")
+hl.env("XCURSOR_SIZE", "32")
+hl.env("HYPRCURSOR_SIZE", "32")
 
 -- Dark mode
 hl.env("GTK_THEME", "Adwaita:dark")       -- GTK3 apps (needs gnome-themes-extra)
@@ -439,6 +443,15 @@ hl.window_rule({
 hl.window_rule({
     name  = "dolphin-opacity",
     match = { class = "^org.kde.dolphin$" },
+
+    opacity = "0.9 0.85",
+})
+
+-- Steam (theme: config/millennium): see-through like Dolphin; games have
+-- their own class (steam_app_*), so they stay opaque
+hl.window_rule({
+    name  = "steam-opacity",
+    match = { class = "^steam$" },
 
     opacity = "0.9 0.85",
 })

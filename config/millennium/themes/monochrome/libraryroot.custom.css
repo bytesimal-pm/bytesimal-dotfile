@@ -1,0 +1,73 @@
+/* Main Steam window + its popups (menus, dialogs, settings).
+   Colors: Steam's own stylesheets are turned grey by libraryroot.custom.js
+   (its class names are hashed per build, so they can't be listed here).
+   This file only sets what that can't: fonts, the base background, the
+   color variables Steam sets from JS, scrollbars and selection. */
+
+:root {
+    --gpColor-Blue: #ffffff;
+    --gpColor-Green: #e6e6e6;
+    --gpColor-Yellow: #c8c8c8;
+    --gpColor-Red: #a0a0a0;
+    --gpColor-Orange: #b4b4b4;
+    --gpStoreLighterGrey: #1e1e1e;
+    --gpStoreLightestGrey: #2a2a2a;
+    --gpBackground-DarkSoft: rgba(0, 0, 0, 0.3);
+    --gpBackground-DarkMedium: rgba(0, 0, 0, 0.5);
+    --gpBackground-LightSoft: var(--mono-hover);
+    --gpBackground-LightMedium: var(--mono-active);
+}
+
+/* Same font as the bar, kitty and Qt apps; Sarabun for Thai */
+body,
+body *:not(svg):not(path) {
+    font-family: "JetBrainsMono Nerd Font", "Sarabun", "Noto Sans", sans-serif !important;
+}
+
+body {
+    background: var(--mono-bg) !important;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-track {
+    background: transparent !important;
+}
+
+::selection {
+    background: var(--mono-white);
+    color: #000000;
+}
+
+/* Keyboard focus rings: white, like the rest of the rice */
+:focus-visible {
+    outline-color: var(--mono-white) !important;
+}
+
+/* Plain dialog buttons: flat, thin border; the default one is white */
+button.DialogButton {
+    background: var(--mono-bg-input) !important;
+    border: 1px solid var(--mono-border) !important;
+    color: var(--mono-text) !important;
+}
+button.DialogButton:not(.Disabled):hover,
+button.DialogButton:not(.Disabled):focus {
+    background: var(--mono-active) !important;
+    color: var(--mono-white) !important;
+}
+button.DialogButton.Primary {
+    background: var(--mono-white) !important;
+    color: #000000 !important;
+}
+button.DialogButton.Primary:not(.Disabled):hover {
+    background: #d0d0d0 !important;
+}
+
+.DialogInput,
+.DialogTextInputBase {
+    background: var(--mono-bg-input) !important;
+    border: 1px solid var(--mono-border) !important;
+    color: var(--mono-text) !important;
+}

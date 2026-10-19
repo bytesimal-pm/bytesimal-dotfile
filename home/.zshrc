@@ -33,7 +33,28 @@ alias grep='grep --color=auto'
 # git-protocol {https|ssh} [remote]: switch a remote's URL between
 # https://host/owner/repo.git and git@host:owner/repo.git.
 # With no protocol, prints the current URL.
+# git-protocol -g {https|ssh} [host]: same, but for every repo, via a global
+# url.<base>.insteadOf rewrite in ~/.gitconfig (host defaults to github.com).
 git-protocol() {
+    if [[ $1 == (-g|--global) ]]; then
+        local host=${3:-github.com}
+        local ssh="git@$host:" https="https://$host/"
+        case $2 in
+            https|ssh)
+                git config --global --unset-all "url.$ssh.insteadOf"   2>/dev/null
+                git config --global --unset-all "url.$https.insteadOf" 2>/dev/null
+                if [[ $2 == ssh ]]; then
+                    git config --global "url.$ssh.insteadOf" "$https"
+                else
+                    git config --global "url.$https.insteadOf" "$ssh"
+                fi && print "global $host: $2"
+                ;;
+            "") git config --global --get-regexp "^url\..*\.insteadof$" || print "global: no rewrites" ;;
+            *)  print -u2 "usage: git-protocol -g {https|ssh} [host]"; return 1 ;;
+        esac
+        return
+    fi
+
     local remote=${2:-origin} url host repo new
     url=$(git remote get-url "$remote") || return
     if [[ $url =~ '^https?://([^/]+)/(.+)$' ]]; then
@@ -55,7 +76,13 @@ git-protocol() {
 
     git remote set-url "$remote" "$new" && print "$remote: $url -> $new"
 }
-_git-protocol() { _arguments '1:protocol:(https ssh)' '2:remote:($(git remote 2>/dev/null))' }
+_git-protocol() {
+    if [[ $words[2] == (-g|--global) ]]; then
+        _arguments '1:flag:(-g)' '2:protocol:(https ssh)' '3:host:(github.com gitlab.com codeberg.org)'
+    else
+        _arguments '1:protocol:(-g https ssh)' '2:remote:($(git remote 2>/dev/null))'
+    fi
+}
 compdef _git-protocol git-protocol
 
 # Fuzzy finder: Ctrl+R history, Ctrl+T files, Alt+C cd into folder

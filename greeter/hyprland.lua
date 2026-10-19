@@ -12,8 +12,10 @@ hl.monitor({
 
 -- Theme.qml reads this instead of ~/Pictures/Wallpapers (the greeter can't read $HOME)
 hl.env("QS_WALLPAPER", "/usr/local/share/wallpapers/shizuku-monochrome-4k.mp4")
-hl.env("XCURSOR_SIZE", "24")
-hl.env("HYPRCURSOR_SIZE", "24")
+-- Same cursor as the desktop; install.sh copies it to /usr/share/icons
+hl.env("XCURSOR_THEME", "Shiori-Novella")
+hl.env("XCURSOR_SIZE", "32")
+hl.env("HYPRCURSOR_SIZE", "32")
 
 hl.on("hyprland.start", function ()
     hl.exec_cmd("qs -p /etc/greetd/quickshell; hyprctl dispatch 'hl.dsp.exit()'")

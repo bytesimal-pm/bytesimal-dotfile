@@ -1,0 +1,10 @@
+{
+    "name": "Monochrome",
+    "author": "bytesimal",
+    "description": "See-through black & white, matching the Hyprland rice (bar, kitty, Dolphin, Vesktop). Game art keeps its colors.",
+    "version": "1.0.0",
+    "tags": ["Dark", "Minimal"],
+    "UseDefaultPatches": true,
+    "RootColors": "colors.css",
+    "Steam-WebKit": "webkit.css"
+}

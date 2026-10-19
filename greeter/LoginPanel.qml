@@ -54,8 +54,10 @@ PanelWindow {
         ScriptAction {
             script: {
                 if (Greetd.available) {
-                    // Clear tty1 and hide its cursor: it shows between the two compositors
-                    Greetd.launch(["sh", "-c", "printf '\\033[2J\\033[H\\033[?25l' 2>/dev/null; exec start-hyprland >/dev/null 2>&1"], [
+                    // Clear tty1 and hide its cursor: it shows between the two compositors.
+                    // greetd joins the args with spaces and runs them through /bin/sh (to
+                    // source /etc/profile), so the -c script needs its own quotes.
+                    Greetd.launch(["sh", "-c", "\"printf '\\033[2J\\033[H\\033[?25l' 2>/dev/null; exec start-hyprland >/dev/null 2>&1\""], [
                         "XDG_SESSION_TYPE=wayland",
                         "XDG_CURRENT_DESKTOP=Hyprland",
                         "XDG_SESSION_DESKTOP=Hyprland",
